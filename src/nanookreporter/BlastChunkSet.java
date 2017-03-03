@@ -16,7 +16,10 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 
 public class BlastChunkSet extends AbstractTableModel {
+    public final static int TYPE_CARD = 1;
+    public final static int TYPE_NT = 2;
     private int chunkCounter = 0;
+    private int selectedChunk = 0;
     private String directory;
     private String prefix;
     private String midfix;
@@ -24,40 +27,88 @@ public class BlastChunkSet extends AbstractTableModel {
     private int numberOfCols = 5;
     private ArrayList<BlastChunk> chunks = new ArrayList<BlastChunk>();
     private HashMap<String, Integer> idCounts = new HashMap<String, Integer>();
+    private HashMap<String, String> titles = new HashMap<String, String>();
     private HashMap<String, Integer> sortedCounts;
     private ArrayList<String> ids = new ArrayList<String>();
     private ArrayList<String> aros = new ArrayList<String>();
     private ArrayList<String> desc = new ArrayList<String>();
     private int counts[] = new int[100000];
+    private int chunkType = TYPE_CARD;
+    private String[] columnNames = {"1", "2", "3", "4", "5"};
+    private boolean doneScan = false;
 
     public BlastChunkSet(String d, String p, String m) {
         directory = d;
         prefix = p;
         midfix = m;
+        
+        if (midfix.equals("blastn_card")) {
+            numberOfCols = 5;
+            chunkType = TYPE_CARD;
+            columnNames[0] = "Rank";
+            columnNames[1] = "Count";
+            columnNames[2] = "Id";
+            columnNames[3] = "Name";
+            columnNames[4] = "Description";
+        } else {
+            numberOfCols = 4;
+            chunkType = TYPE_NT;
+            columnNames[0] = "Rank";
+            columnNames[1] = "Count";
+            columnNames[2] = "Id";
+            columnNames[3] = "Description";
+        }
     }
     
-    public void scanForChunks() {
+    public void scanForChunks(NanoOKReporter nor) {
         boolean found = false;
         int c = chunkCounter;
+        
+        // We always re-scan the last chunk
+        if (chunks.size() > 0) {
+            chunks.remove(chunkCounter);
+        }
         
         do {
             String filename = directory + File.separator + prefix + "_" + c + "_" + midfix + ".txt";
             File f = new File(filename);
             if (f.exists()) {
                 //System.out.println("Found " + filename);
+                nor.setStatus("File " + filename);
                 chunks.add(new BlastChunk(filename));
                 found = true;
                 chunkCounter = c;                
             } else {
+                System.out.println("Can't find "+filename);
                 found = false;
-                System.out.println("Can't find " + filename);
             }
             c++;
+            
+            // DEBUG
+            if ((doneScan == false) && (c == 10)) {
+                break;
+            }
         } while (found);        
+        
+        selectedChunk = chunkCounter;
+        doneScan = true;
+        //System.out.println("chunkCounter "+chunkCounter);
+    }
+    
+    public String getPrefix() {
+        return prefix;
     }
     
     public int getNumberOfChunks() {
         return chunkCounter;
+    }
+    
+    public int getSelectedChunk() {
+        return selectedChunk;
+    }
+    
+    public void setSelectedChunk(int s) {
+        selectedChunk = s;
     }
     
     public void countHits(int endChunk) {
@@ -66,22 +117,38 @@ public class BlastChunkSet extends AbstractTableModel {
             endChunk = chunkCounter;
         }
         
-        for (int i=0; i<endChunk; i++) {
+        if (chunks.size() == 0) {
+            //System.out.println("Error: No chunks");
+            return;
+        }
+        
+        if (selectedChunk < endChunk) {
+            endChunk = selectedChunk;
+        }
+        
+        idCounts.clear();
+        
+        //System.out.println("Counting hits...");
+        for (int i=0; i<=endChunk; i++) {
             for (int j=0; j<chunks.get(i).getNumberOfAlignments(); j++) {
                 BlastAlignment ba = chunks.get(i).getAlignment(j);
                 String id = ba.getSubjectId();
-                int count = 1;
+                String title = ba.getSubjectTitle();
+                int count = 0;
                 
                 if (idCounts.containsKey(id)) {
-                    count=idCounts.get(id) + 1;
+                    count=idCounts.get(id);
+                } else {
+                    titles.put(id, title);
                 }
                 
                 idCounts.put(id, count+1);
             }
         }
+        //System.out.println("Done " + endChunk);
     }
     
-    public void updateTable(JTable table) {
+    public void updateTableCard(JTable table) {
         LinkedList list = new LinkedList(idCounts.entrySet());
         Collections.sort(list, new Comparator() {
             public int compare(Object o2, Object o1) {
@@ -110,9 +177,42 @@ public class BlastChunkSet extends AbstractTableModel {
             numberOfRows++;
         }
 
-        System.out.println("Table updated with "+numberOfRows+ " rows");
+        System.out.println("CARD Table updated with "+numberOfRows+ " rows");
     }
+    
+    public void updateTableNt(JTable table) {
+        //System.out.println("Updating...");
+        LinkedList list = new LinkedList(idCounts.entrySet());
+        Collections.sort(list, new Comparator() {
+            public int compare(Object o2, Object o1) {
+                return ((Comparable) ((Map.Entry) (o1)).getValue()).compareTo(((Map.Entry) (o2)).getValue());
+            }
+        });
 
+        // Here I am copying the sorted list in HashMap
+        // using LinkedHashMap to preserve the insertion order
+        numberOfRows = 0;
+        for (Iterator it = list.iterator(); it.hasNext();) {
+            Map.Entry entry = (Map.Entry) it.next();            
+            ids.add(numberOfRows, (String) entry.getKey());
+            counts[numberOfRows] = (int) entry.getValue();
+            numberOfRows++;
+            if (numberOfRows > 1000) {
+                break;
+            }
+        }
+
+        System.out.println("NT Table updated with "+numberOfRows+ " rows");
+    }
+    
+    public void updateTable(JTable table) {
+        if (chunkType == TYPE_CARD) {
+            updateTableCard(table);
+        } else {
+            updateTableNt(table);
+       }
+    }    
+    
     @Override
     public int getRowCount() {
        return numberOfRows;
@@ -125,31 +225,19 @@ public class BlastChunkSet extends AbstractTableModel {
 
     @Override
     public String getColumnName(int columnIndex) {
-        String name = "";
-        
-        switch(columnIndex) {
-            case 0:
-                name="Rank";
-                break;
-            case 1:
-                name="Count";
-                break;
-            case 2:
-                name="Id";
-                break;
-            case 3:
-                name="Accession";
-                break;
-            case 4:
-                name="Description";
-                break;
-        }
-        
-        return name;
+        return columnNames[columnIndex];
     }
     
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
+        if (chunkType == TYPE_CARD) {
+            return getValueAtCard(rowIndex, columnIndex);
+        }
+        
+        return getValueAtNt(rowIndex, columnIndex);
+    }
+    
+    public Object getValueAtCard(int rowIndex, int columnIndex) {
         switch(columnIndex) {
             case 0:
                 return rowIndex+1;
@@ -165,4 +253,24 @@ public class BlastChunkSet extends AbstractTableModel {
         
         return null;
     }
+
+    public Object getValueAtNt(int rowIndex, int columnIndex) {
+        switch(columnIndex) {
+            case 0:
+                return rowIndex+1;
+            case 1:
+                return Integer.toString(counts[rowIndex]);
+            case 2:
+                return ids.get(rowIndex);
+            case 3:
+                return titles.get(ids.get(rowIndex));
+        }
+        
+        return null;
+    }
+    
+    public long getChunkLastModified(int c) {
+        return chunks.get(c).getLastModified();
+    }
+
 }

@@ -5,10 +5,13 @@
  */
 package nanookreporter;
 
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.Window;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import javax.swing.JFileChooser;
 import javax.swing.JTable;
 
@@ -19,12 +22,22 @@ import javax.swing.JTable;
 public class NanoOKReporter extends javax.swing.JFrame {
     private NanoOKSample sample;
     private AROMap aroMap;
+    private int pf;
+    private int type;
+    private int amrChunkSliderMax = 0;
+    private int taxonChunkSliderMax = 0;
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("d/M/yyyy HH:mm:ss");
+    private int amrColumnWidths[] = {0, 0, 0, 0, 0};
+    private int taxonColumnWidths[] = {0, 0, 0, 0};
     
     /**
      * Creates new form ReporterFrame
      */
     public NanoOKReporter() {
+        super("NanoOKReporter");
         initComponents();
+        setTaxonColumnWidths();
+        setAmrColumnWidths();
         AROMap.readMapFile("/Users/leggettr/Documents/Databases/CARD_1.1.1_Download_17Oct16/aro.csv");
     }
 
@@ -55,25 +68,31 @@ public class NanoOKReporter extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
-        jLabel11 = new javax.swing.JLabel();
-        jLabel12 = new javax.swing.JLabel();
+        timeRunningLabel = new javax.swing.JLabel();
+        readsAnalysedLabel = new javax.swing.JLabel();
+        chunksLabel = new javax.swing.JLabel();
         TaxonPanel = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
+        taxonScrollPane = new javax.swing.JScrollPane();
         taxonTable = new javax.swing.JTable();
+        taxonChunkSlider = new javax.swing.JSlider();
+        taxonChunkLabel = new javax.swing.JLabel();
+        taxonChunkTimeLabel = new javax.swing.JLabel();
         CardPanel = new javax.swing.JPanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
+        amrScrollPane = new javax.swing.JScrollPane();
         amrTable = new javax.swing.JTable();
+        amrChunkSlider = new javax.swing.JSlider();
+        amrChunkLabel = new javax.swing.JLabel();
+        amrChunkTimeLabel = new javax.swing.JLabel();
         sampleTextField = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         ChooseButton = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         failRadioButton = new javax.swing.JRadioButton();
         passRadioButton = new javax.swing.JRadioButton();
-        jLabel6 = new javax.swing.JLabel();
-        jSlider2 = new javax.swing.JSlider();
         twoDRadioButton = new javax.swing.JRadioButton();
         templateRadioButton = new javax.swing.JRadioButton();
+        progressLabel = new javax.swing.JLabel();
+        rescanButton = new javax.swing.JButton();
 
         jTextField5.setText("jTextField5");
 
@@ -108,12 +127,6 @@ public class NanoOKReporter extends javax.swing.JFrame {
 
         jLabel4.setText("Chunks:");
 
-        jLabel10.setText("jLabel10");
-
-        jLabel11.setText("jLabel11");
-
-        jLabel12.setText("jLabel12");
-
         javax.swing.GroupLayout StatsPanelLayout = new javax.swing.GroupLayout(StatsPanel);
         StatsPanel.setLayout(StatsPanelLayout);
         StatsPanelLayout.setHorizontalGroup(
@@ -126,10 +139,10 @@ public class NanoOKReporter extends javax.swing.JFrame {
                     .addComponent(jLabel2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(StatsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel12)
-                    .addComponent(jLabel11)
-                    .addComponent(jLabel10))
-                .addContainerGap(540, Short.MAX_VALUE))
+                    .addComponent(chunksLabel)
+                    .addComponent(readsAnalysedLabel)
+                    .addComponent(timeRunningLabel))
+                .addContainerGap(793, Short.MAX_VALUE))
         );
         StatsPanelLayout.setVerticalGroup(
             StatsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -137,63 +150,91 @@ public class NanoOKReporter extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(StatsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(jLabel10))
+                    .addComponent(timeRunningLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(StatsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(jLabel11))
+                    .addComponent(readsAnalysedLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(StatsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
-                    .addComponent(jLabel12))
-                .addContainerGap(390, Short.MAX_VALUE))
+                    .addComponent(chunksLabel))
+                .addContainerGap(530, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Stats", StatsPanel);
 
+        taxonScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+
         taxonTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
             },
             new String [] {
-                "Rank", "ID", "Count"
+                "Rank", "Count", "Id", "Description"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class, java.lang.Object.class
+                java.lang.Integer.class, java.lang.Integer.class, java.lang.String.class, java.lang.String.class
             };
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
             }
         });
-        jScrollPane1.setViewportView(taxonTable);
+        taxonTable.setMaximumSize(null);
+        taxonTable.setShowGrid(false);
+        taxonScrollPane.setViewportView(taxonTable);
+
+        taxonChunkSlider.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                taxonChunkSliderStateChanged(evt);
+            }
+        });
+
+        taxonChunkLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        taxonChunkLabel.setText("Chunk: 5000/5000");
+
+        taxonChunkTimeLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        taxonChunkTimeLabel.setText("22/12/2017 13:34:05");
 
         javax.swing.GroupLayout TaxonPanelLayout = new javax.swing.GroupLayout(TaxonPanel);
         TaxonPanel.setLayout(TaxonPanelLayout);
         TaxonPanelLayout.setHorizontalGroup(
             TaxonPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1)
+            .addComponent(taxonScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 953, Short.MAX_VALUE)
+            .addGroup(TaxonPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(taxonChunkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(taxonChunkSlider, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(taxonChunkTimeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         TaxonPanelLayout.setVerticalGroup(
             TaxonPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, TaxonPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE))
+                .addGroup(TaxonPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(taxonChunkSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(taxonChunkTimeLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(taxonChunkLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(taxonScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 555, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         jTabbedPane1.addTab("Taxon", TaxonPanel);
 
-        jScrollPane2.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        amrScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
 
         amrTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -211,24 +252,50 @@ public class NanoOKReporter extends javax.swing.JFrame {
                 return types [columnIndex];
             }
         });
-        jScrollPane2.setViewportView(amrTable);
+        amrScrollPane.setViewportView(amrTable);
         if (amrTable.getColumnModel().getColumnCount() > 0) {
             amrTable.getColumnModel().getColumn(0).setPreferredWidth(10);
             amrTable.getColumnModel().getColumn(1).setPreferredWidth(10);
             amrTable.getColumnModel().getColumn(2).setPreferredWidth(200);
         }
 
+        amrChunkSlider.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                amrChunkSliderStateChanged(evt);
+            }
+        });
+
+        amrChunkLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        amrChunkLabel.setText("Chunk: 5000/5000");
+        amrChunkLabel.setMaximumSize(new java.awt.Dimension(120, 16));
+        amrChunkLabel.setMinimumSize(new java.awt.Dimension(120, 16));
+
+        amrChunkTimeLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        amrChunkTimeLabel.setText("22/12/2017 13:34:05");
+
         javax.swing.GroupLayout CardPanelLayout = new javax.swing.GroupLayout(CardPanel);
         CardPanel.setLayout(CardPanelLayout);
         CardPanelLayout.setHorizontalGroup(
             CardPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 753, Short.MAX_VALUE)
+            .addComponent(amrScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 953, Short.MAX_VALUE)
+            .addGroup(CardPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(amrChunkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(amrChunkSlider, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(amrChunkTimeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         CardPanelLayout.setVerticalGroup(
             CardPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, CardPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE))
+                .addGroup(CardPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(amrChunkTimeLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(amrChunkLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(amrChunkSlider, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(amrScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 555, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         jTabbedPane1.addTab("AMR", CardPanel);
@@ -265,9 +332,6 @@ public class NanoOKReporter extends javax.swing.JFrame {
             }
         });
 
-        jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        jLabel6.setText("Chunk: 1/50");
-
         Template2DButtonGroup.add(twoDRadioButton);
         twoDRadioButton.setSelected(true);
         twoDRadioButton.setText("2D");
@@ -292,28 +356,19 @@ public class NanoOKReporter extends javax.swing.JFrame {
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(templateRadioButton, javax.swing.GroupLayout.DEFAULT_SIZE, 91, Short.MAX_VALUE)
-                    .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(templateRadioButton, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jSlider2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(twoDRadioButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 35, Short.MAX_VALUE)
-                        .addComponent(passRadioButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(failRadioButton, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addComponent(twoDRadioButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 35, Short.MAX_VALUE)
+                .addComponent(passRadioButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(failRadioButton, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jSlider2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(twoDRadioButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -323,23 +378,40 @@ public class NanoOKReporter extends javax.swing.JFrame {
                 .addGap(19, 19, 19))
         );
 
+        progressLabel.setText("Ready");
+
+        rescanButton.setText("Rescan");
+        rescanButton.setEnabled(false);
+        rescanButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rescanButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jTabbedPane1)
             .addGroup(layout.createSequentialGroup()
-                .addGap(14, 14, 14)
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(sampleTextField)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(ChooseButton)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(progressLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(210, 210, 210)
+                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(14, 14, 14)
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(sampleTextField)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(ChooseButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(rescanButton)))
                 .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addGap(210, 210, 210)
-                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -348,12 +420,14 @@ public class NanoOKReporter extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(sampleTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(ChooseButton))
+                    .addComponent(ChooseButton)
+                    .addComponent(rescanButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTabbedPane1)
-                .addContainerGap())
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(progressLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         jTabbedPane1.getAccessibleContext().setAccessibleName("Stats");
@@ -372,22 +446,35 @@ public class NanoOKReporter extends javax.swing.JFrame {
             System.out.println("getCurrentDirectory(): " + chooser.getCurrentDirectory());
             sampleTextField.setText(chooser.getSelectedFile().toString());
             sample = new NanoOKSample(chooser.getSelectedFile().toString());
-            updateTables();
+            ChunkLoader loader = new ChunkLoader(this, sample);
+            loader.execute();
         } else {
             System.out.println("No Selection ");
         }
     }//GEN-LAST:event_ChooseButtonActionPerformed
 
     private void passRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passRadioButtonActionPerformed
-        updateTables();
+        if (sample != null) {
+            updateStats();
+            updateTableAmr();
+            updateTableTaxon();
+        }
     }//GEN-LAST:event_passRadioButtonActionPerformed
 
     private void failRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_failRadioButtonActionPerformed
-        updateTables();
+        if (sample != null) {
+            updateStats();
+            updateTableAmr();
+            updateTableTaxon();
+        }
     }//GEN-LAST:event_failRadioButtonActionPerformed
 
     private void templateRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_templateRadioButtonActionPerformed
-        updateTables();
+        if (sample != null) {
+            updateStats();
+            updateTableAmr();
+            updateTableTaxon();
+        }
     }//GEN-LAST:event_templateRadioButtonActionPerformed
 
     private void sampleTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sampleTextFieldActionPerformed
@@ -395,13 +482,50 @@ public class NanoOKReporter extends javax.swing.JFrame {
     }//GEN-LAST:event_sampleTextFieldActionPerformed
 
     private void twoDRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_twoDRadioButtonActionPerformed
-        updateTables();
+        if (sample != null) {
+            updateStats();
+            updateTableAmr();
+            updateTableTaxon();
+        }
     }//GEN-LAST:event_twoDRadioButtonActionPerformed
 
-    public void updateTables() {
-        int pf;
-        int type;
-        
+    private void amrChunkSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_amrChunkSliderStateChanged
+        if (sample != null) {
+            BlastChunkSet amrChunkSet = sample.getCardFile().getChunkSet(type, pf);
+            amrChunkLabel.setText("Chunk "+ amrChunkSlider.getValue() + "/" + amrChunkSet.getNumberOfChunks());
+            amrChunkTimeLabel.setText(dateFormat.format(amrChunkSet.getChunkLastModified(amrChunkSlider.getValue())));
+            if (amrChunkSlider.getValueIsAdjusting() == false) {
+                amrChunkSet.setSelectedChunk(amrChunkSlider.getValue());
+                updateTableAmr();
+            }
+        }
+    }//GEN-LAST:event_amrChunkSliderStateChanged
+
+    private void taxonChunkSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_taxonChunkSliderStateChanged
+        if (sample != null) {
+            BlastChunkSet taxonChunkSet = sample.getNtFile().getChunkSet(type, pf);
+            taxonChunkLabel.setText("Chunk "+ taxonChunkSlider.getValue() + "/" + taxonChunkSet.getNumberOfChunks());
+            taxonChunkTimeLabel.setText(dateFormat.format(taxonChunkSet.getChunkLastModified(taxonChunkSlider.getValue())));
+            if (taxonChunkSlider.getValueIsAdjusting() == false) {
+                taxonChunkSet.setSelectedChunk(taxonChunkSlider.getValue());
+                updateTableTaxon();
+            }
+        }
+    }//GEN-LAST:event_taxonChunkSliderStateChanged
+
+    private void rescanButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rescanButtonActionPerformed
+        System.out.println("Rescanning!");
+        ChunkLoader loader = new ChunkLoader(this, sample);
+        loader.execute();
+    }//GEN-LAST:event_rescanButtonActionPerformed
+
+    public void updateStats() {
+        timeRunningLabel.setText("0hr0m");
+        readsAnalysedLabel.setText("0");
+        chunksLabel.setText("0");
+    }
+    
+    public void findType() {
         if (passRadioButton.isSelected()) {
             pf = BlastFile.TYPE_PASS;
         } else {
@@ -413,16 +537,67 @@ public class NanoOKReporter extends javax.swing.JFrame {
         } else {
             type = BlastFile.TYPE_2D;
         }
-        
+    }
+    
+    public void updateTableAmr() {                                
+        setStatus("Updating AMR table");
+        findType();
+
+        BlastChunkSet amrChunkSet = sample.getCardFile().getChunkSet(type, pf);
         sample.getCardFile().countSet(type, pf);
         sample.getCardFile().updateTable(amrTable, type, pf);
-        amrTable.setModel(sample.getCardFile().getChunkSet(type, pf));
+        amrChunkLabel.setText("Chunk "+ amrChunkSet.getSelectedChunk() + "/" + amrChunkSet.getNumberOfChunks());
+        if (amrChunkSliderMax != amrChunkSet.getNumberOfChunks()) {
+            amrChunkSliderMax = amrChunkSet.getNumberOfChunks();
+            amrChunkSlider.setMaximum(amrChunkSet.getNumberOfChunks());
+            amrChunkSet.setSelectedChunk(amrChunkSliderMax);
+        }
+        amrChunkSlider.setValue(amrChunkSet.getSelectedChunk());
+        amrTable.setModel(amrChunkSet);
         amrTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        amrTable.getColumnModel().getColumn(0).setPreferredWidth(100);
-        amrTable.getColumnModel().getColumn(1).setPreferredWidth(100);        
-        amrTable.getColumnModel().getColumn(2).setPreferredWidth(400);
-        amrTable.getColumnModel().getColumn(3).setPreferredWidth(200);
-        amrTable.getColumnModel().getColumn(4).setPreferredWidth(400);
+        setAmrColumnWidths();
+        
+        setStatus("Table updated");
+    }
+    
+    public void updateTableTaxon() {        
+        setStatus("Updating taxonomy table");
+        findType();
+
+        BlastChunkSet taxonChunkSet = sample.getNtFile().getChunkSet(type, pf);
+        sample.getNtFile().countSet(type, pf);
+        sample.getNtFile().updateTable(taxonTable, type, pf);
+        taxonChunkLabel.setText("Chunk "+ taxonChunkSet.getSelectedChunk() + "/" + taxonChunkSet.getNumberOfChunks());
+        if (taxonChunkSliderMax != taxonChunkSet.getNumberOfChunks()) {
+            taxonChunkSliderMax = taxonChunkSet.getNumberOfChunks();
+            taxonChunkSlider.setMaximum(taxonChunkSet.getNumberOfChunks());
+            taxonChunkSet.setSelectedChunk(taxonChunkSliderMax);
+        }
+        taxonChunkSlider.setValue(taxonChunkSet.getSelectedChunk());
+        taxonTable.setModel(taxonChunkSet);
+        taxonTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        setTaxonColumnWidths();
+
+        setStatus("Table updated");
+    }    
+    
+    public void setAmrColumnWidths() {
+        amrTable.getColumnModel().getColumn(0).setPreferredWidth(70);
+        amrTable.getColumnModel().getColumn(1).setPreferredWidth(70);        
+        amrTable.getColumnModel().getColumn(2).setPreferredWidth(150);
+        amrTable.getColumnModel().getColumn(3).setPreferredWidth(300);
+        amrTable.getColumnModel().getColumn(4).setPreferredWidth(600);
+    }
+    
+    public void setTaxonColumnWidths() {
+        taxonTable.getColumnModel().getColumn(0).setPreferredWidth(70);
+        taxonTable.getColumnModel().getColumn(1).setPreferredWidth(70);        
+        taxonTable.getColumnModel().getColumn(2).setPreferredWidth(150);
+        taxonTable.getColumnModel().getColumn(3).setPreferredWidth(600);
+    }
+    
+    public void setStatus(String s) {
+        progressLabel.setText(s);
     }
     
     /**
@@ -441,6 +616,10 @@ public class NanoOKReporter extends javax.swing.JFrame {
     public void handleNewDirectory(String directory) {
     }
     
+    public void loadFinished() {
+        rescanButton.setEnabled(true);
+    }
+        
     /**
      * @param args the command line arguments
      */
@@ -451,6 +630,7 @@ public class NanoOKReporter extends javax.swing.JFrame {
                 NanoOKReporter rf = new NanoOKReporter();
                 centreWindow(rf);
                 rf.setVisible(true);
+                System.out.println("Running");
             }
         });
     }
@@ -462,25 +642,23 @@ public class NanoOKReporter extends javax.swing.JFrame {
     private javax.swing.JPanel StatsPanel;
     private javax.swing.JPanel TaxonPanel;
     private javax.swing.ButtonGroup Template2DButtonGroup;
+    private javax.swing.JLabel amrChunkLabel;
+    private javax.swing.JSlider amrChunkSlider;
+    private javax.swing.JLabel amrChunkTimeLabel;
+    private javax.swing.JScrollPane amrScrollPane;
     private javax.swing.JTable amrTable;
+    private javax.swing.JLabel chunksLabel;
     private javax.swing.JRadioButton failRadioButton;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel4;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSlider jSlider1;
-    private javax.swing.JSlider jSlider2;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;
@@ -489,9 +667,17 @@ public class NanoOKReporter extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField6;
     private javax.swing.JTextField jTextField7;
     private javax.swing.JRadioButton passRadioButton;
+    private javax.swing.JLabel progressLabel;
+    private javax.swing.JLabel readsAnalysedLabel;
+    private javax.swing.JButton rescanButton;
     private javax.swing.JTextField sampleTextField;
+    private javax.swing.JLabel taxonChunkLabel;
+    private javax.swing.JSlider taxonChunkSlider;
+    private javax.swing.JLabel taxonChunkTimeLabel;
+    private javax.swing.JScrollPane taxonScrollPane;
     private javax.swing.JTable taxonTable;
     private javax.swing.JRadioButton templateRadioButton;
+    private javax.swing.JLabel timeRunningLabel;
     private javax.swing.JRadioButton twoDRadioButton;
     // End of variables declaration//GEN-END:variables
 }

@@ -38,11 +38,23 @@ public class BlastAlignment {
         }
     }
     
+    public String getQueryId() {
+        return qseqid;
+    }
+    
+    public double getEValue() {
+        return evalue;
+    }
+    
     public float getPercentIdentity() {
         return pident;
     }
     
     public String getSubjectId() {
         return sseqid;
+    }
+    
+    public String getSubjectTitle() {
+        return stitle;
     }
 }

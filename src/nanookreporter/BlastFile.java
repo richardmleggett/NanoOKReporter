@@ -21,17 +21,19 @@ public class BlastFile {
     public final static int TYPE_FAIL = 0;
     public final static int TYPE_PASS = 1;
     public ArrayList<BlastChunkSet> chunkSet = new ArrayList<BlastChunkSet>();
+    public String midfix;
     
-    public BlastFile(String directory, String midfix) {
+    public BlastFile(String directory, String m) {
+        midfix = m;
         chunkSet.add(new BlastChunkSet(directory, "all_2D_pass", midfix));
         chunkSet.add(new BlastChunkSet(directory, "all_2D_fail", midfix));
         chunkSet.add(new BlastChunkSet(directory, "all_Template_pass", midfix));
         chunkSet.add(new BlastChunkSet(directory, "all_Template_fail", midfix));
     }
     
-    public void rescanAll() {
+    public void rescanAll(NanoOKReporter nor) {
         for (int i=0; i<chunkSet.size(); i++) {
-            chunkSet.get(i).scanForChunks();
+            chunkSet.get(i).scanForChunks(nor);
         }
     }
     
