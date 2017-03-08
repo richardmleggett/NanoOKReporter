@@ -85,9 +85,9 @@ public class BlastChunkSet extends AbstractTableModel {
             c++;
             
             // DEBUG
-            if ((doneScan == false) && (c == 10)) {
-                break;
-            }
+            //if ((doneScan == false) && (c == 10)) {
+            //    break;
+            //}
         } while (found);        
         
         selectedChunk = chunkCounter;
@@ -270,6 +270,9 @@ public class BlastChunkSet extends AbstractTableModel {
     }
     
     public long getChunkLastModified(int c) {
+        if (chunks.size() == 0) {
+            return 0;
+        }
         return chunks.get(c).getLastModified();
     }
 

@@ -24,15 +24,17 @@ public class BlastChunk {
             String line;                
             while ((line = br.readLine()) != null) {
                 BlastAlignment ba = new BlastAlignment(line);
-                if (ba.getQueryId().equals(lastId)) {
-                    if (ba.getEValue() < lastE) {
-                        System.out.println("Error: e value less!");
-                        System.exit(1);
+                if (ba.isValidAlignment()) {
+                    if (ba.getQueryId().equals(lastId)) {
+                        if (ba.getEValue() < lastE) {
+                            System.out.println("Error: e value less!");
+                            System.exit(1);
+                        }
+                    } else {
+                        alignments.add(ba);
+                        lastId = ba.getQueryId();
+                        lastE = ba.getEValue();
                     }
-                } else {
-                    alignments.add(ba);
-                    lastId = ba.getQueryId();
-                    lastE = ba.getEValue();
                 }
             }
             br.close();

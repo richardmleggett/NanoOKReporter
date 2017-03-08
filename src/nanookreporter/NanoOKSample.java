@@ -8,6 +8,7 @@ public class NanoOKSample {
     String ntDir;
     BlastFile cardFile;
     BlastFile ntFile;
+    BlastFile bacteriaFile;
     
     public NanoOKSample(String directory) {
         sampleDirectory = directory;
@@ -15,27 +16,21 @@ public class NanoOKSample {
         if (dirExists(sampleDirectory)) {
             cardFile = new BlastFile(sampleDirectory + File.separator + "blastn_card", "blastn_card");
             ntFile = new BlastFile(sampleDirectory + File.separator + "blastn_nt", "blastn_nt");
+            bacteriaFile = new BlastFile(sampleDirectory + File.separator + "blastn_bacteria", "blastn_bacteria");
         }
     }
     
-    public void readData(NanoOKReporter nor) {
-        //File sampleDir = new File(sampleDirectory);
-        //if (dirExists(sampleDirectory)) {
-        //    cardDir = sampleDirectory + File.separator + "blastn_card";
+    public void readData(int db, int type, int pf, NanoOKReporter nor) {
+        if (db == BlastFile.DATABASE_CARD) {
             nor.setStatus("Reading CARD chunks...");
-            readCardData(nor);
-      //      if (dirExists(cardDir)) {
-      //          ntDir = sampleDirectory + File.separator + "blastn_card";                
-      //      }
-
-     //       ntDir = sampleDirectory + File.separator + "blastn_nt";
+            cardFile.rescan(nor, type, pf);
+        } else if (db == BlastFile.DATABASE_NT) {
             nor.setStatus("Reading NT chunks...");
-            readNtData(nor);
-     //       if (dirExists(ntDir)) {
-      //          ntDir = sampleDirectory + File.separator + "blastn_nt";                
-      //      }
-
-      //  }
+            ntFile.rescan(nor, type, pf);
+        } else if (db == BlastFile.DATABASE_BACTERIA) {
+            nor.setStatus("Reading bacteria chunks...");
+            bacteriaFile.rescan(nor, type, pf);
+        }
     }
     
     private boolean dirExists(String directory) {
@@ -53,16 +48,7 @@ public class NanoOKSample {
         
         return isDir;
     }
-    
-    private void readCardData(NanoOKReporter nor) {
-        cardFile.rescanAll(nor);
-    }
-
-    private void readNtData(NanoOKReporter nor) {
-        ntFile.rescanAll(nor);
-    }
-
-    
+        
     public BlastFile getCardFile() {
         return cardFile;
     }
@@ -70,4 +56,9 @@ public class NanoOKSample {
     public BlastFile getNtFile() {
         return ntFile;
     }
+
+    public BlastFile getBacteriaFile() {
+        return bacteriaFile;
+    }
+
 }
