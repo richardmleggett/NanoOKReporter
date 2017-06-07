@@ -40,7 +40,7 @@ public class BlastAlignment {
                 System.out.println("Error parsing alignment - incomplete file?");
             }
         } else {
-            System.out.println("Unknown alignment - incomplete file?");
+            System.out.println("Unknown alignment - incomplete file? ["+a+"]");
         }
     }
     

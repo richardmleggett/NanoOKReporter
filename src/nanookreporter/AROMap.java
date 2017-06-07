@@ -19,11 +19,22 @@ public class AROMap {
             }
             
             while ((line = br.readLine()) != null) {
-                String[] columns = line.split(",");
-                if (columns.length == 3) {
-                    names.put(columns[0], columns[1]);
-                    descriptions.put(columns[0], columns[2]);
+                int firstComma = line.indexOf(',');
+                int secondComma = line.indexOf(',', firstComma + 1);
+                if ((firstComma != -1) && (secondComma != -1)) {
+                    String aro = line.substring(0, firstComma);
+                    String name = line.substring(firstComma+1, secondComma);
+                    String description = line.substring(secondComma+1);
+                    
+                    names.put(aro, name);
+                    descriptions.put(aro, description);
                 }
+                
+                //String[] columns = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+                //if (columns.length == 3) {
+                //    names.put(columns[0], columns[1]);
+                //    descriptions.put(columns[0], columns[2]);
+                //}
             }
             br.close();
         } catch (Exception e) {
@@ -38,6 +49,8 @@ public class AROMap {
         String name = names.get(a);
         if (name != null) {
             n = name;
+        } else {
+            System.out.println("Can't find "+a);
         }
         return n;
     }

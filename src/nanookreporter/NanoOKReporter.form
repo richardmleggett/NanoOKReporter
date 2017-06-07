@@ -63,11 +63,56 @@
     </Component>
     <Component class="javax.swing.ButtonGroup" name="Template2DButtonGroup">
     </Component>
+    <Menu class="javax.swing.JMenuBar" name="mainMenuBar">
+      <SubComponents>
+        <Menu class="javax.swing.JMenu" name="fileMenu">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="File"/>
+          </Properties>
+          <SubComponents>
+            <MenuItem class="javax.swing.JMenuItem" name="openMenuItem">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Open sample directory"/>
+                <Property name="enabled" type="boolean" value="false"/>
+              </Properties>
+            </MenuItem>
+          </SubComponents>
+        </Menu>
+        <Menu class="javax.swing.JMenu" name="actionMenu">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Actions"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="actionMenuActionPerformed"/>
+          </Events>
+          <SubComponents>
+            <MenuItem class="javax.swing.JMenuItem" name="saveCardSummaryItem">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Save CARD summaries"/>
+                <Property name="enabled" type="boolean" value="false"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="saveCardSummaryItemActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="saveChunkTimesItem">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Save chunk times"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="saveChunkTimesItemActionPerformed"/>
+              </Events>
+            </MenuItem>
+          </SubComponents>
+        </Menu>
+      </SubComponents>
+    </Menu>
   </NonVisualComponents>
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="3"/>
   </Properties>
   <SyntheticProperties>
+    <SyntheticProperty name="menuBar" type="java.lang.String" value="mainMenuBar"/>
     <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
     <SyntheticProperty name="generateCenter" type="boolean" value="false"/>
   </SyntheticProperties>
@@ -87,12 +132,12 @@
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
           <Component id="mainTabbedPane" alignment="0" pref="0" max="32767" attributes="0"/>
-          <Group type="102" alignment="1" attributes="0">
+          <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="1" attributes="0">
-                  <Component id="samplePanel" max="32767" attributes="0"/>
-                  <Component id="progressLabel" alignment="0" max="32767" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="samplePanel" alignment="1" max="32767" attributes="0"/>
                   <Component id="selectPanel" alignment="0" max="32767" attributes="0"/>
+                  <Component id="progressLabel" alignment="0" max="32767" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -147,7 +192,7 @@
                           <Component id="readsAnalysedLabel" min="-2" max="-2" attributes="0"/>
                           <Component id="timeRunningLabel" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace pref="834" max="32767" attributes="0"/>
+                      <EmptySpace pref="740" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -213,7 +258,7 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="ntScrollPane" pref="994" max="32767" attributes="0"/>
+                  <Component id="ntScrollPane" pref="900" max="32767" attributes="0"/>
                   <Group type="102" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="ntChunkLabel" min="-2" pref="130" max="-2" attributes="0"/>
@@ -327,7 +372,7 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="bacteriaScrollPane" alignment="0" pref="994" max="32767" attributes="0"/>
+                  <Component id="bacteriaScrollPane" alignment="0" pref="900" max="32767" attributes="0"/>
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="bacteriaChunkLabel" min="-2" pref="130" max="-2" attributes="0"/>
@@ -441,7 +486,7 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="cardScrollPane" pref="994" max="32767" attributes="0"/>
+                  <Component id="cardScrollPane" pref="900" max="32767" attributes="0"/>
                   <Group type="102" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="cardChunkLabel" min="-2" pref="130" max="-2" attributes="0"/>

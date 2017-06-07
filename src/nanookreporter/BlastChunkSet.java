@@ -2,6 +2,9 @@ package nanookreporter;
 
 import java.awt.List;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -111,6 +114,10 @@ public class BlastChunkSet extends AbstractTableModel {
         selectedChunk = s;
     }
     
+    public BlastChunk getChunk(int i) {
+        return chunks.get(i);
+    }
+    
     public void countHits(int endChunk) {
         if (endChunk > chunkCounter) {
             System.out.println("Warning: end chunk is greater than number of chunks!");
@@ -146,6 +153,52 @@ public class BlastChunkSet extends AbstractTableModel {
             }
         }
         //System.out.println("Done " + endChunk);
+    }
+    
+    public void writeSummaryFile(String filename) {
+        LinkedList list = new LinkedList(idCounts.entrySet());
+        Collections.sort(list, new Comparator() {
+            public int compare(Object o2, Object o1) {
+                return ((Comparable) ((Map.Entry) (o1)).getValue()).compareTo(((Map.Entry) (o2)).getValue());
+            }
+        });
+        
+        try {
+            PrintWriter pw = new PrintWriter(new FileWriter(filename)); 
+
+            pw.println("Rank,Count,ID,Name,Description");
+            
+            // Here I am copying the sorted list in HashMap
+            // using LinkedHashMap to preserve the insertion order
+            numberOfRows = 0;
+            for (Iterator it = list.iterator(); it.hasNext();) {
+                Map.Entry entry = (Map.Entry) it.next();
+                String key = entry.getKey().toString();
+                int aroPos = key.indexOf("|ARO:");
+                String aro = "";
+
+                if (aroPos > 0) { 
+                    String aroStart = key.substring(aroPos+1);
+                    aro = aroStart.substring(0, aroStart.indexOf('|'));
+                }
+                
+                pw.println((numberOfRows+1) + "," +
+                           entry.getValue() + "," +
+                           entry.getKey() + "," +
+                           AROMap.getNameFromAccession(aro) + "," + 
+                           AROMap.getDescriptionFromAccession(aro));
+
+                numberOfRows++;
+            }
+
+            System.out.println("File " + filename + " written with "+numberOfRows+ " rows");
+
+            pw.close();
+        } catch (IOException e) {
+            System.out.println("writeSummaryFile exception:");
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
     
     public void updateTableCard(JTable table) {

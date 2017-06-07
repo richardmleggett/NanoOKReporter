@@ -18,8 +18,8 @@ import javax.swing.table.DefaultTableModel;
 public class BlastFile {
     public final static int TYPE_2D = 0;
     public final static int TYPE_TEMPLATE = 1;
-    public final static int TYPE_FAIL = 0;
-    public final static int TYPE_PASS = 1;
+    public final static int READTYPE_FAIL = 0;
+    public final static int READTYPE_PASS = 1;
     public final static int CHUNKSET_2D_PASS = 0;
     public final static int CHUNKSET_2D_FAIL = 1;
     public final static int CHUNKSET_TEMPLATE_PASS = 2;
@@ -36,6 +36,11 @@ public class BlastFile {
         chunkSet.add(CHUNKSET_2D_FAIL, new BlastChunkSet(directory, "all_2D_fail", midfix));
         chunkSet.add(CHUNKSET_TEMPLATE_PASS, new BlastChunkSet(directory, "all_Template_pass", midfix));
         chunkSet.add(CHUNKSET_TEMPLATE_FAIL, new BlastChunkSet(directory, "all_Template_fail", midfix));
+
+        //chunkSet.add(CHUNKSET_2D_PASS, new BlastChunkSet(directory, "all_2D_pass", midfix));
+        //chunkSet.add(CHUNKSET_2D_FAIL, new BlastChunkSet(directory, "bambi_4_20102016_fail_2d", "blast_card"));
+        //chunkSet.add(CHUNKSET_TEMPLATE_PASS, new BlastChunkSet(directory, "all_Template_pass", midfix));
+        //chunkSet.add(CHUNKSET_TEMPLATE_FAIL, new BlastChunkSet(directory, "all_Template_fail", midfix));
     }
     
     public void rescanAll(NanoOKReporter nor) {
@@ -51,13 +56,13 @@ public class BlastFile {
     private int getIndexIntoChunkSet(int type, int pf) {
         int index = 0;
         
-        if ((type == TYPE_2D) && (pf == TYPE_PASS)) {
+        if ((type == TYPE_2D) && (pf == READTYPE_PASS)) {
             index = CHUNKSET_2D_PASS;
-        } else if ((type == TYPE_2D) && (pf == TYPE_FAIL)) {
+        } else if ((type == TYPE_2D) && (pf == READTYPE_FAIL)) {
             index = CHUNKSET_2D_FAIL;
-        } else if ((type == TYPE_TEMPLATE) && (pf == TYPE_PASS)) {
+        } else if ((type == TYPE_TEMPLATE) && (pf == READTYPE_PASS)) {
             index = CHUNKSET_TEMPLATE_PASS;
-        } else if ((type == TYPE_TEMPLATE) && (pf == TYPE_FAIL)) {
+        } else if ((type == TYPE_TEMPLATE) && (pf == READTYPE_FAIL)) {
             index = CHUNKSET_TEMPLATE_FAIL;
         }
         
@@ -74,10 +79,45 @@ public class BlastFile {
         cs.countHits(cs.getNumberOfChunks());
     }
     
+    public void countUptoSet(int type, int pf, int n) {
+        int index = getIndexIntoChunkSet(type, pf);
+        BlastChunkSet cs = chunkSet.get(index);        
+        cs.countHits(n);
+    }
+    
     public void updateTable(JTable table, int type, int pf) {
         int index = getIndexIntoChunkSet(type, pf);
         BlastChunkSet cs = chunkSet.get(index);        
         cs.updateTable(table);
     }
     
+    /**
+     * Get a type string (Template, Complement, 2D) from an integer.
+     * @param n integer to convert
+     * @return type String
+     */
+    public static String getTypeFromInt(int n) {
+        String typeString;
+        
+        switch(n) {
+            case TYPE_TEMPLATE: typeString = "Template"; break;
+            //case TYPE_COMPLEMENT: typeString = "Complement"; break;
+            case TYPE_2D: typeString = "2D"; break;
+            default: typeString = "Unknown"; break;
+        }
+        
+        return typeString;
+    }
+    
+    public static String getPassFailFromInt(int n) {
+        String typeString;
+        
+        switch(n) {
+            case READTYPE_PASS: typeString = "pass"; break;
+            case READTYPE_FAIL: typeString = "fail"; break;
+            default: typeString = "Unknown"; break;
+        }
+        
+        return typeString;
+    }
 }

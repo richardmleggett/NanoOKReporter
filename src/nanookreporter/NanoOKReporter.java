@@ -113,6 +113,12 @@ public class NanoOKReporter extends javax.swing.JFrame {
         loadNtButton = new javax.swing.JButton();
         loadBacteriaButton = new javax.swing.JButton();
         loadCardButton = new javax.swing.JButton();
+        mainMenuBar = new javax.swing.JMenuBar();
+        fileMenu = new javax.swing.JMenu();
+        openMenuItem = new javax.swing.JMenuItem();
+        actionMenu = new javax.swing.JMenu();
+        saveCardSummaryItem = new javax.swing.JMenuItem();
+        saveChunkTimesItem = new javax.swing.JMenuItem();
 
         jTextField5.setText("jTextField5");
 
@@ -162,7 +168,7 @@ public class NanoOKReporter extends javax.swing.JFrame {
                     .addComponent(chunksLabel)
                     .addComponent(readsAnalysedLabel)
                     .addComponent(timeRunningLabel))
-                .addContainerGap(834, Short.MAX_VALUE))
+                .addContainerGap(740, Short.MAX_VALUE))
         );
         StatsPanelLayout.setVerticalGroup(
             StatsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -233,7 +239,7 @@ public class NanoOKReporter extends javax.swing.JFrame {
         ntPanel.setLayout(ntPanelLayout);
         ntPanelLayout.setHorizontalGroup(
             ntPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(ntScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 994, Short.MAX_VALUE)
+            .addComponent(ntScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 900, Short.MAX_VALUE)
             .addGroup(ntPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(ntChunkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -304,7 +310,7 @@ public class NanoOKReporter extends javax.swing.JFrame {
         bacteriaPanel.setLayout(bacteriaPanelLayout);
         bacteriaPanelLayout.setHorizontalGroup(
             bacteriaPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(bacteriaScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 994, Short.MAX_VALUE)
+            .addComponent(bacteriaScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 900, Short.MAX_VALUE)
             .addGroup(bacteriaPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(bacteriaChunkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -369,7 +375,7 @@ public class NanoOKReporter extends javax.swing.JFrame {
         cardPanel.setLayout(cardPanelLayout);
         cardPanelLayout.setHorizontalGroup(
             cardPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(cardScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 994, Short.MAX_VALUE)
+            .addComponent(cardScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 900, Short.MAX_VALUE)
             .addGroup(cardPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(cardChunkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -547,17 +553,53 @@ public class NanoOKReporter extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        fileMenu.setText("File");
+
+        openMenuItem.setText("Open sample directory");
+        openMenuItem.setEnabled(false);
+        fileMenu.add(openMenuItem);
+
+        mainMenuBar.add(fileMenu);
+
+        actionMenu.setText("Actions");
+        actionMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                actionMenuActionPerformed(evt);
+            }
+        });
+
+        saveCardSummaryItem.setText("Save CARD summaries");
+        saveCardSummaryItem.setEnabled(false);
+        saveCardSummaryItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveCardSummaryItemActionPerformed(evt);
+            }
+        });
+        actionMenu.add(saveCardSummaryItem);
+
+        saveChunkTimesItem.setText("Save chunk times");
+        saveChunkTimesItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveChunkTimesItemActionPerformed(evt);
+            }
+        });
+        actionMenu.add(saveChunkTimesItem);
+
+        mainMenuBar.add(actionMenu);
+
+        setJMenuBar(mainMenuBar);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(mainTabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(samplePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(progressLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(selectPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(samplePanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(selectPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(progressLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -592,6 +634,7 @@ public class NanoOKReporter extends javax.swing.JFrame {
             sample = new NanoOKSample(chooser.getSelectedFile().toString());
             //ChunkLoader loader = new ChunkLoader(this, sample);
             //loader.execute();
+            saveCardSummaryItem.setEnabled(true);
         } else {
             System.out.println("No Selection ");
         }
@@ -678,7 +721,7 @@ public class NanoOKReporter extends javax.swing.JFrame {
                                              sample,
                                              BlastFile.DATABASE_NT,
                                              twoDRadioButton.isSelected() ? BlastFile.TYPE_2D:BlastFile.TYPE_TEMPLATE,
-                                             passRadioButton.isSelected() ? BlastFile.TYPE_PASS:BlastFile.TYPE_FAIL);
+                                             passRadioButton.isSelected() ? BlastFile.READTYPE_PASS:BlastFile.READTYPE_FAIL);
         loader.execute();
     }//GEN-LAST:event_loadNtButtonActionPerformed
 
@@ -687,7 +730,7 @@ public class NanoOKReporter extends javax.swing.JFrame {
                                              sample,
                                              BlastFile.DATABASE_BACTERIA,
                                              twoDRadioButton.isSelected() ? BlastFile.TYPE_2D:BlastFile.TYPE_TEMPLATE,
-                                             passRadioButton.isSelected() ? BlastFile.TYPE_PASS:BlastFile.TYPE_FAIL);
+                                             passRadioButton.isSelected() ? BlastFile.READTYPE_PASS:BlastFile.READTYPE_FAIL);
         loader.execute();
     }//GEN-LAST:event_loadBacteriaButtonActionPerformed
 
@@ -696,15 +739,30 @@ public class NanoOKReporter extends javax.swing.JFrame {
                                              sample,
                                              BlastFile.DATABASE_CARD,
                                              twoDRadioButton.isSelected() ? BlastFile.TYPE_2D:BlastFile.TYPE_TEMPLATE,
-                                             passRadioButton.isSelected() ? BlastFile.TYPE_PASS:BlastFile.TYPE_FAIL);
+                                             passRadioButton.isSelected() ? BlastFile.READTYPE_PASS:BlastFile.READTYPE_FAIL);
         loader.execute();
     }//GEN-LAST:event_loadCardButtonActionPerformed
+
+    private void saveCardSummaryItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveCardSummaryItemActionPerformed
+        // TODO add your handling code here:
+        System.out.println("Hello");
+        sample.writeCardSummaries(type, pf);
+    }//GEN-LAST:event_saveCardSummaryItemActionPerformed
+
+    private void actionMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionMenuActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_actionMenuActionPerformed
+
+    private void saveChunkTimesItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveChunkTimesItemActionPerformed
+        // TODO add your handling code here:
+        sample.writeChunkTimesFile(type, pf);
+    }//GEN-LAST:event_saveChunkTimesItemActionPerformed
     
     public void findType() {
         if (passRadioButton.isSelected()) {
-            pf = BlastFile.TYPE_PASS;
+            pf = BlastFile.READTYPE_PASS;
         } else {
-            pf = BlastFile.TYPE_FAIL;
+            pf = BlastFile.READTYPE_FAIL;
         }
         
         if (templateRadioButton.isSelected()) {
@@ -874,6 +932,7 @@ public class NanoOKReporter extends javax.swing.JFrame {
     private javax.swing.ButtonGroup PassFailButtonGroup;
     private javax.swing.JPanel StatsPanel;
     private javax.swing.ButtonGroup Template2DButtonGroup;
+    private javax.swing.JMenu actionMenu;
     private javax.swing.JLabel bacteriaChunkLabel;
     private javax.swing.JSlider bacteriaChunkSlider;
     private javax.swing.JLabel bacteriaChunkTimeLabel;
@@ -888,6 +947,7 @@ public class NanoOKReporter extends javax.swing.JFrame {
     private javax.swing.JTable cardTable;
     private javax.swing.JLabel chunksLabel;
     private javax.swing.JRadioButton failRadioButton;
+    private javax.swing.JMenu fileMenu;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -906,18 +966,22 @@ public class NanoOKReporter extends javax.swing.JFrame {
     private javax.swing.JButton loadBacteriaButton;
     private javax.swing.JButton loadCardButton;
     private javax.swing.JButton loadNtButton;
+    private javax.swing.JMenuBar mainMenuBar;
     private javax.swing.JTabbedPane mainTabbedPane;
     private javax.swing.JLabel ntChunkLabel;
     private javax.swing.JSlider ntChunkSlider;
     private javax.swing.JLabel ntChunkTimeLabel;
     private javax.swing.JPanel ntPanel;
     private javax.swing.JScrollPane ntScrollPane;
+    private javax.swing.JMenuItem openMenuItem;
     private javax.swing.JRadioButton passRadioButton;
     private javax.swing.JLabel progressLabel;
     private javax.swing.JPanel radioPanel;
     private javax.swing.JLabel readsAnalysedLabel;
     private javax.swing.JPanel samplePanel;
     private javax.swing.JTextField sampleTextField;
+    private javax.swing.JMenuItem saveCardSummaryItem;
+    private javax.swing.JMenuItem saveChunkTimesItem;
     private javax.swing.JPanel selectPanel;
     private javax.swing.JTable taxonTable;
     private javax.swing.JRadioButton templateRadioButton;
