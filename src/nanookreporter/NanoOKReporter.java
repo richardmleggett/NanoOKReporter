@@ -916,6 +916,11 @@ public class NanoOKReporter extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
+        Taxonomy t = new Taxonomy("/Users/leggettr/Documents/Projects/BAMBI/taxdump/nodes.dmp", "/Users/leggettr/Documents/Projects/BAMBI/taxdump/names.dmp");
+        System.exit(0);
+        
+        
+        
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
