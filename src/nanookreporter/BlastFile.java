@@ -28,14 +28,16 @@ public class BlastFile {
     public final static int DATABASE_BACTERIA = 2;
     public final static int DATABASE_CARD = 3;        
     public ArrayList<BlastChunkSet> chunkSet = new ArrayList<BlastChunkSet>();
+    private NanoOKReporterOptions options;
     public String midfix;
     
-    public BlastFile(String directory, String m) {
+    public BlastFile(NanoOKReporterOptions o, String directory, String m) {
         midfix = m;
-        chunkSet.add(CHUNKSET_2D_PASS, new BlastChunkSet(directory, "all_2D_pass", midfix));
-        chunkSet.add(CHUNKSET_2D_FAIL, new BlastChunkSet(directory, "all_2D_fail", midfix));
-        chunkSet.add(CHUNKSET_TEMPLATE_PASS, new BlastChunkSet(directory, "all_Template_pass", midfix));
-        chunkSet.add(CHUNKSET_TEMPLATE_FAIL, new BlastChunkSet(directory, "all_Template_fail", midfix));
+        options = o;
+        chunkSet.add(CHUNKSET_2D_PASS, new BlastChunkSet(options, directory, "all_2D_pass", midfix));
+        chunkSet.add(CHUNKSET_2D_FAIL, new BlastChunkSet(options, directory, "all_2D_fail", midfix));
+        chunkSet.add(CHUNKSET_TEMPLATE_PASS, new BlastChunkSet(options, directory, "all_Template_pass", midfix));
+        chunkSet.add(CHUNKSET_TEMPLATE_FAIL, new BlastChunkSet(options, directory, "all_Template_fail", midfix));
 
         //chunkSet.add(CHUNKSET_2D_PASS, new BlastChunkSet(directory, "all_2D_pass", midfix));
         //chunkSet.add(CHUNKSET_2D_FAIL, new BlastChunkSet(directory, "bambi_4_20102016_fail_2d", "blast_card"));

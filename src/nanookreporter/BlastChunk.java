@@ -11,10 +11,12 @@ import java.util.logging.Logger;
 public class BlastChunk {
     private ArrayList<BlastAlignment> alignments = new ArrayList<BlastAlignment>();
     private long lastModified = 0;
+    private NanoOKReporterOptions options;
     
-    public BlastChunk(String filename) {
+    public BlastChunk(NanoOKReporterOptions o, String filename) {
         String lastId = "";
         Double lastE = 0.0;
+        options = o;
         
         File f = new File(filename);
         lastModified = f.lastModified();
@@ -34,6 +36,7 @@ public class BlastChunk {
                         alignments.add(ba);
                         lastId = ba.getQueryId();
                         lastE = ba.getEValue();
+                        options.getTaxonomy().parseTaxonomy(ba.getSubjectTitle());
                     }
                 }
             }

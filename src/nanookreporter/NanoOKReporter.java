@@ -21,6 +21,7 @@ import javax.swing.JTable;
  * @author leggettr
  */
 public class NanoOKReporter extends javax.swing.JFrame {
+    private NanoOKReporterOptions options;
     private NanoOKSample sample;
     private AROMap aroMap;
     private int pf;
@@ -38,6 +39,8 @@ public class NanoOKReporter extends javax.swing.JFrame {
      */
     public NanoOKReporter() {
         super("NanoOKReporter");
+        this.setSize(new Dimension(1000,800));
+        this.setPreferredSize(new Dimension(1000,800));
         System.out.println("NanoOKReporter");
         System.out.println("");
         System.out.println("To do:");
@@ -49,6 +52,14 @@ public class NanoOKReporter extends javax.swing.JFrame {
         setCardColumnWidths();
         setBacteriaColumnWidths();
         AROMap.readMapFile("/Users/leggettr/Documents/Databases/CARD_1.1.1_Download_17Oct16/aro.csv");
+        
+        options = new NanoOKReporterOptions();
+        taxonomyPanel.setOptions(options);
+        
+        if (options.getLastSample() != "") {
+            sampleTextField.setText(options.getLastSample());
+            setSampleDirSelected(options.getLastSample());
+        }
     }
 
     /**
@@ -99,6 +110,12 @@ public class NanoOKReporter extends javax.swing.JFrame {
         cardChunkSlider = new javax.swing.JSlider();
         cardChunkLabel = new javax.swing.JLabel();
         cardChunkTimeLabel = new javax.swing.JLabel();
+        taxonomyPanelTab = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        taxonomyPanel = new nanookreporter.TaxonomyPanel();
+        bacteriaChunkSlider1 = new javax.swing.JSlider();
+        bacteriaChunkLabel1 = new javax.swing.JLabel();
+        bacteriaChunkTimeLabel1 = new javax.swing.JLabel();
         progressLabel = new javax.swing.JLabel();
         samplePanel = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
@@ -168,7 +185,7 @@ public class NanoOKReporter extends javax.swing.JFrame {
                     .addComponent(chunksLabel)
                     .addComponent(readsAnalysedLabel)
                     .addComponent(timeRunningLabel))
-                .addContainerGap(740, Short.MAX_VALUE))
+                .addContainerGap(819, Short.MAX_VALUE))
         );
         StatsPanelLayout.setVerticalGroup(
             StatsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -185,7 +202,7 @@ public class NanoOKReporter extends javax.swing.JFrame {
                 .addGroup(StatsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
                     .addComponent(chunksLabel))
-                .addContainerGap(417, Short.MAX_VALUE))
+                .addContainerGap(460, Short.MAX_VALUE))
         );
 
         mainTabbedPane.addTab("Stats", StatsPanel);
@@ -239,7 +256,7 @@ public class NanoOKReporter extends javax.swing.JFrame {
         ntPanel.setLayout(ntPanelLayout);
         ntPanelLayout.setHorizontalGroup(
             ntPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(ntScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 900, Short.MAX_VALUE)
+            .addComponent(ntScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 979, Short.MAX_VALUE)
             .addGroup(ntPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(ntChunkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -257,8 +274,7 @@ public class NanoOKReporter extends javax.swing.JFrame {
                     .addComponent(ntChunkTimeLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(ntChunkLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(ntScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 443, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(112, 112, 112))
+                .addComponent(ntScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 485, Short.MAX_VALUE))
         );
 
         mainTabbedPane.addTab("NT", ntPanel);
@@ -310,7 +326,7 @@ public class NanoOKReporter extends javax.swing.JFrame {
         bacteriaPanel.setLayout(bacteriaPanelLayout);
         bacteriaPanelLayout.setHorizontalGroup(
             bacteriaPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(bacteriaScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 900, Short.MAX_VALUE)
+            .addComponent(bacteriaScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 979, Short.MAX_VALUE)
             .addGroup(bacteriaPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(bacteriaChunkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -328,8 +344,7 @@ public class NanoOKReporter extends javax.swing.JFrame {
                     .addComponent(bacteriaChunkTimeLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(bacteriaChunkLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(bacteriaScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 443, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(110, 110, 110))
+                .addComponent(bacteriaScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 485, Short.MAX_VALUE))
         );
 
         mainTabbedPane.addTab("Bacteria", bacteriaPanel);
@@ -375,7 +390,7 @@ public class NanoOKReporter extends javax.swing.JFrame {
         cardPanel.setLayout(cardPanelLayout);
         cardPanelLayout.setHorizontalGroup(
             cardPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(cardScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 900, Short.MAX_VALUE)
+            .addComponent(cardScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 979, Short.MAX_VALUE)
             .addGroup(cardPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(cardChunkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -393,11 +408,64 @@ public class NanoOKReporter extends javax.swing.JFrame {
                     .addComponent(cardChunkLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(cardChunkSlider, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cardScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 443, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(112, 112, 112))
+                .addComponent(cardScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 485, Short.MAX_VALUE))
         );
 
         mainTabbedPane.addTab("CARD", cardPanel);
+
+        taxonomyPanelTab.setEnabled(false);
+
+        javax.swing.GroupLayout taxonomyPanelLayout = new javax.swing.GroupLayout(taxonomyPanel);
+        taxonomyPanel.setLayout(taxonomyPanelLayout);
+        taxonomyPanelLayout.setHorizontalGroup(
+            taxonomyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 958, Short.MAX_VALUE)
+        );
+        taxonomyPanelLayout.setVerticalGroup(
+            taxonomyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 1998, Short.MAX_VALUE)
+        );
+
+        jScrollPane1.setViewportView(taxonomyPanel);
+
+        bacteriaChunkSlider1.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                bacteriaChunkSlider1StateChanged(evt);
+            }
+        });
+
+        bacteriaChunkLabel1.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        bacteriaChunkLabel1.setText("Chunk: 5000/5000");
+
+        bacteriaChunkTimeLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        bacteriaChunkTimeLabel1.setText("22/12/2017 13:34:05");
+
+        javax.swing.GroupLayout taxonomyPanelTabLayout = new javax.swing.GroupLayout(taxonomyPanelTab);
+        taxonomyPanelTab.setLayout(taxonomyPanelTabLayout);
+        taxonomyPanelTabLayout.setHorizontalGroup(
+            taxonomyPanelTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane1)
+            .addGroup(taxonomyPanelTabLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(bacteriaChunkLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(bacteriaChunkSlider1, javax.swing.GroupLayout.DEFAULT_SIZE, 675, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(bacteriaChunkTimeLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+        taxonomyPanelTabLayout.setVerticalGroup(
+            taxonomyPanelTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, taxonomyPanelTabLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(taxonomyPanelTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(bacteriaChunkSlider1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(bacteriaChunkTimeLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(bacteriaChunkLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 485, Short.MAX_VALUE))
+        );
+
+        mainTabbedPane.addTab("Taxonomy", taxonomyPanelTab);
 
         progressLabel.setText("Ready");
 
@@ -427,10 +495,10 @@ public class NanoOKReporter extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(sampleTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 667, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(sampleTextField)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(ChooseButton)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addContainerGap())
         );
         samplePanelLayout.setVerticalGroup(
             samplePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -463,7 +531,6 @@ public class NanoOKReporter extends javax.swing.JFrame {
         });
 
         Template2DButtonGroup.add(twoDRadioButton);
-        twoDRadioButton.setSelected(true);
         twoDRadioButton.setText("2D");
         twoDRadioButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -472,6 +539,7 @@ public class NanoOKReporter extends javax.swing.JFrame {
         });
 
         Template2DButtonGroup.add(templateRadioButton);
+        templateRadioButton.setSelected(true);
         templateRadioButton.setText("Template");
         templateRadioButton.setToolTipText("");
         templateRadioButton.addActionListener(new java.awt.event.ActionListener() {
@@ -542,15 +610,15 @@ public class NanoOKReporter extends javax.swing.JFrame {
         selectPanelLayout.setHorizontalGroup(
             selectPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(selectPanelLayout.createSequentialGroup()
-                .addContainerGap()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(radioPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         selectPanelLayout.setVerticalGroup(
             selectPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-            .addGroup(selectPanelLayout.createSequentialGroup()
-                .addComponent(radioPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, selectPanelLayout.createSequentialGroup()
+                .addComponent(radioPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 36, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         fileMenu.setText("File");
@@ -593,7 +661,7 @@ public class NanoOKReporter extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(mainTabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+            .addComponent(mainTabbedPane)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -610,10 +678,9 @@ public class NanoOKReporter extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addComponent(selectPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(mainTabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, 529, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(mainTabbedPane)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(progressLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(progressLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         mainTabbedPane.getAccessibleContext().setAccessibleName("Stats");
@@ -631,10 +698,7 @@ public class NanoOKReporter extends javax.swing.JFrame {
         if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             System.out.println("getCurrentDirectory(): " + chooser.getCurrentDirectory());
             sampleTextField.setText(chooser.getSelectedFile().toString());
-            sample = new NanoOKSample(chooser.getSelectedFile().toString());
-            //ChunkLoader loader = new ChunkLoader(this, sample);
-            //loader.execute();
-            saveCardSummaryItem.setEnabled(true);
+            setSampleDirSelected(chooser.getSelectedFile().toString());
         } else {
             System.out.println("No Selection ");
         }
@@ -757,6 +821,10 @@ public class NanoOKReporter extends javax.swing.JFrame {
         // TODO add your handling code here:
         sample.writeChunkTimesFile(type, pf);
     }//GEN-LAST:event_saveChunkTimesItemActionPerformed
+
+    private void bacteriaChunkSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_bacteriaChunkSlider1StateChanged
+        // TODO add your handling code here:
+    }//GEN-LAST:event_bacteriaChunkSlider1StateChanged
     
     public void findType() {
         if (passRadioButton.isSelected()) {
@@ -893,6 +961,14 @@ public class NanoOKReporter extends javax.swing.JFrame {
         progressLabel.setText(s);
     }
     
+    private void setSampleDirSelected(String sampleDir) {
+        sample = new NanoOKSample(options, sampleDir);
+        options.storeLastLoadedSample(sampleDir);
+        //ChunkLoader loader = new ChunkLoader(this, sample);
+        //loader.execute();
+        saveCardSummaryItem.setEnabled(true);
+    }
+    
     /**
      * Centres a window on the screen.
      *
@@ -915,12 +991,7 @@ public class NanoOKReporter extends javax.swing.JFrame {
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
-        Taxonomy t = new Taxonomy("/Users/leggettr/Documents/Projects/BAMBI/taxdump/nodes.dmp", "/Users/leggettr/Documents/Projects/BAMBI/taxdump/names.dmp");
-        System.exit(0);
-        
-        
-        
+    public static void main(String args[]) {                
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -939,8 +1010,11 @@ public class NanoOKReporter extends javax.swing.JFrame {
     private javax.swing.ButtonGroup Template2DButtonGroup;
     private javax.swing.JMenu actionMenu;
     private javax.swing.JLabel bacteriaChunkLabel;
+    private javax.swing.JLabel bacteriaChunkLabel1;
     private javax.swing.JSlider bacteriaChunkSlider;
+    private javax.swing.JSlider bacteriaChunkSlider1;
     private javax.swing.JLabel bacteriaChunkTimeLabel;
+    private javax.swing.JLabel bacteriaChunkTimeLabel1;
     private javax.swing.JPanel bacteriaPanel;
     private javax.swing.JScrollPane bacteriaScrollPane;
     private javax.swing.JTable bacteriaTable;
@@ -961,6 +1035,7 @@ public class NanoOKReporter extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSlider jSlider1;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;
@@ -989,6 +1064,8 @@ public class NanoOKReporter extends javax.swing.JFrame {
     private javax.swing.JMenuItem saveChunkTimesItem;
     private javax.swing.JPanel selectPanel;
     private javax.swing.JTable taxonTable;
+    private nanookreporter.TaxonomyPanel taxonomyPanel;
+    private javax.swing.JPanel taxonomyPanelTab;
     private javax.swing.JRadioButton templateRadioButton;
     private javax.swing.JLabel timeRunningLabel;
     private javax.swing.JRadioButton twoDRadioButton;

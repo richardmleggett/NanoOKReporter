@@ -13,14 +13,16 @@ public class NanoOKSample {
     BlastFile cardFile;
     BlastFile ntFile;
     BlastFile bacteriaFile;
-    
-    public NanoOKSample(String directory) {
+    NanoOKReporterOptions options;
+            
+    public NanoOKSample(NanoOKReporterOptions o, String directory) {
+        options = o;
         sampleDirectory = directory;
         File sampleDir = new File(sampleDirectory);
         if (dirExists(sampleDirectory)) {
-            cardFile = new BlastFile(sampleDirectory + File.separator + "blastn_card", "blastn_card");
-            ntFile = new BlastFile(sampleDirectory + File.separator + "blastn_nt", "blastn_nt");
-            bacteriaFile = new BlastFile(sampleDirectory + File.separator + "blastn_bacteria", "blastn_bacteria");
+            cardFile = new BlastFile(options, sampleDirectory + File.separator + "blastn_card", "blastn_card");
+            ntFile = new BlastFile(options, sampleDirectory + File.separator + "blastn_nt", "blastn_nt");
+            bacteriaFile = new BlastFile(options, sampleDirectory + File.separator + "blastn_bacteria", "blastn_bacteria");
         }
     }
     
@@ -31,6 +33,8 @@ public class NanoOKSample {
         } else if (db == BlastFile.DATABASE_NT) {
             nor.setStatus("Reading NT chunks...");
             ntFile.rescan(nor, type, pf);
+            options.getTaxonomy().prepareTreePlot();
+            //options.getTaxonomy().displayTaxonomy();
         } else if (db == BlastFile.DATABASE_BACTERIA) {
             nor.setStatus("Reading bacteria chunks...");
             bacteriaFile.rescan(nor, type, pf);

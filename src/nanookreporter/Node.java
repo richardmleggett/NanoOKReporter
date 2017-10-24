@@ -1,15 +1,9 @@
 package nanookreporter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Node<T> {
-    private T data;
-    private Node<T> parent;
-    private List<Node<T>> children;
-    private Long taxonId;
-    private Long parentId;
-    private short rank;
-    
     public static final short RANK_UNKNOWN = 0;
     public static final short RANK_CLASS = 1;
     public static final short RANK_COHORT = 2;
@@ -41,8 +35,19 @@ public class Node<T> {
     public static final short RANK_SUPERPHYLUM = 28;
     public static final short RANK_TRIBE = 29;
     public static final short RANK_VARIETAS = 30;
-        
-    public Node (Long id) {
+
+    private T data;
+    private ArrayList<Node> children = new ArrayList();
+    private Long taxonId;
+    private Long parentId = null;
+    private short rank;
+    private int assigned = 0;
+    private int summarised = 0;
+    private int displayColumn = 0;
+    private int displayRow = 0;
+    private static int maxAssigned = 0;
+            
+    public Node(Long id) {
         taxonId = id;
     }
     
@@ -50,8 +55,10 @@ public class Node<T> {
         return taxonId;
     }
     
-    public void setParent(Long parent) {
-        parentId = parent;
+    public void setParent(Long p) {
+        if (p != taxonId) {
+            parentId = p;
+        }
     }
     
     public Long getParent() {
@@ -59,6 +66,48 @@ public class Node<T> {
     }
     
     public void addChild(Node n) {
+        children.add(n);
+    }
+    
+    public ArrayList getChildren() {
+        return children;
+    }
+    
+    public void incrementAssigned() {
+        assigned++;
+        
+        if (assigned > maxAssigned) {
+            maxAssigned = assigned;
+        }
+    }
+    
+    public static int getMaxAssigned() {
+        return maxAssigned;
+    }
+    
+    public void incrementSummarised() {
+        summarised++;
+    }
+    
+    public int getAssigned() {
+        return assigned;
+    }
+    
+    public void setDisplayPosition(int c, int r) {
+        displayColumn = c;
+        displayRow = r;
+    }
+    
+    public int getDisplayCol() {
+        return displayColumn;
+    }
+
+    public int getDisplayRow() {
+        return displayRow;
+    }
+    
+    public int getSummarised() {
+        return summarised;
     }
     
     public void setRank(String s) {

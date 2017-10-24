@@ -39,8 +39,11 @@ public class BlastChunkSet extends AbstractTableModel {
     private int chunkType = TYPE_CARD;
     private String[] columnNames = {"1", "2", "3", "4", "5"};
     private boolean doneScan = false;
+    private NanoOKReporterOptions options;
 
-    public BlastChunkSet(String d, String p, String m) {
+
+    public BlastChunkSet(NanoOKReporterOptions o, String d, String p, String m) {
+        options = o;
         directory = d;
         prefix = p;
         midfix = m;
@@ -78,7 +81,7 @@ public class BlastChunkSet extends AbstractTableModel {
             if (f.exists()) {
                 //System.out.println("Found " + filename);
                 nor.setStatus("File " + filename);
-                chunks.add(new BlastChunk(filename));
+                chunks.add(new BlastChunk(options, filename));
                 found = true;
                 chunkCounter = c;                
             } else {
@@ -88,9 +91,9 @@ public class BlastChunkSet extends AbstractTableModel {
             c++;
             
             // DEBUG
-            //if ((doneScan == false) && (c == 10)) {
-            //    break;
-            //}
+            if ((doneScan == false) && (c == 10)) {
+                break;
+            }
         } while (found);        
         
         selectedChunk = chunkCounter;
