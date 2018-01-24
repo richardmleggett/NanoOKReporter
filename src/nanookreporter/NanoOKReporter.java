@@ -986,6 +986,7 @@ public class NanoOKReporter extends javax.swing.JFrame {
     }
     
     public void loadFinished() {
+        taxonomyPanel.repaint();
     }
         
     /**

@@ -1,5 +1,7 @@
 package nanookreporter;
 
+import java.util.ArrayList;
+
 public class BlastAlignment {
     // qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore stitle
     private String qseqid;
@@ -16,6 +18,8 @@ public class BlastAlignment {
     private double bitscore;
     private String stitle;
     private boolean validAlignment = false;
+    private long leafNode = 0;
+    private ArrayList<Long> taxonIdPath;
     
     public BlastAlignment(String a) {
         String fields[] = a.split("\\s+", 13);
@@ -66,5 +70,44 @@ public class BlastAlignment {
     
     public String getSubjectTitle() {
         return stitle;
+    }
+    
+    public Double getBitScore() {
+        return bitscore;
+    }
+    
+    public void cacheTaxonIdPath(Taxonomy t) {
+        Long id = t.parseTaxonomyToId(stitle);
+        
+        if (id != null) {
+            leafNode = id;
+        } else {
+            leafNode = 0;
+        }
+
+        taxonIdPath = t.getTaxonIdPathFromId(leafNode);
+    }
+    
+    public ArrayList getTaxonIdPath() {
+        return taxonIdPath;
+    }
+    
+    public int getTaxonLevel() {
+        if (taxonIdPath != null) {
+            return taxonIdPath.size(); // 1-offset
+        }
+        return 0;
+    }
+    
+    public long getLeafNode() {
+        return leafNode;
+    }
+    
+    // Note level is 1-offset
+    public long getTaxonNode(int level) {
+        if (level <= taxonIdPath.size()) {
+            return taxonIdPath.get(taxonIdPath.size() - level);
+        }
+        return 0;
     }
 }

@@ -40,6 +40,7 @@ public class BlastChunkSet extends AbstractTableModel {
     private String[] columnNames = {"1", "2", "3", "4", "5"};
     private boolean doneScan = false;
     private NanoOKReporterOptions options;
+    private int lastScan = 0;
 
 
     public BlastChunkSet(NanoOKReporterOptions o, String d, String p, String m) {
@@ -91,10 +92,15 @@ public class BlastChunkSet extends AbstractTableModel {
             c++;
             
             // DEBUG
-            if ((doneScan == false) && (c == 10)) {
+            if (c >= (lastScan + 10)) {
+                lastScan = c;
                 break;
             }
+            //if ((doneScan == false) && (c == 10)) {
+            //    break;
+            //}
         } while (found);        
+        lastScan = c;
         
         selectedChunk = chunkCounter;
         doneScan = true;
@@ -141,7 +147,7 @@ public class BlastChunkSet extends AbstractTableModel {
         //System.out.println("Counting hits...");
         for (int i=0; i<=endChunk; i++) {
             for (int j=0; j<chunks.get(i).getNumberOfAlignments(); j++) {
-                BlastAlignment ba = chunks.get(i).getAlignment(j);
+                BlastAlignment ba = chunks.get(i).getTopHit(j);
                 String id = ba.getSubjectId();
                 String title = ba.getSubjectTitle();
                 int count = 0;

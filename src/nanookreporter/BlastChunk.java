@@ -9,7 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class BlastChunk {
-    private ArrayList<BlastAlignment> alignments = new ArrayList<BlastAlignment>();
+    private ArrayList<BlastHitSet> allAlignments = new ArrayList<BlastHitSet>();
     private long lastModified = 0;
     private NanoOKReporterOptions options;
     
@@ -23,7 +23,8 @@ public class BlastChunk {
         
         try {
             BufferedReader br = new BufferedReader(new FileReader(filename));
-            String line;                
+            String line;
+            BlastHitSet bhs = null;
             while ((line = br.readLine()) != null) {
                 BlastAlignment ba = new BlastAlignment(line);
                 if (ba.isValidAlignment()) {
@@ -32,14 +33,26 @@ public class BlastChunk {
                             System.out.println("Error: e value less!");
                             System.exit(1);
                         }
-                    } else {
-                        alignments.add(ba);
+                    } else {                       
+                        if (bhs != null) {
+                            allAlignments.add(bhs);
+                            options.getTaxonomy().findAncestorAndStore(bhs);
+                        }
                         lastId = ba.getQueryId();
                         lastE = ba.getEValue();
-                        options.getTaxonomy().parseTaxonomy(ba.getSubjectTitle());
+                        //options.getTaxonomy().parseTaxonomyAndCount(ba.getSubjectTitle());
+                        bhs = new BlastHitSet(options.getTaxonomy());   
                     }
+                    bhs.addAlignment(ba);
                 }
             }
+            
+            // Deal with the bhs we won't have processed
+            if (bhs != null) {
+                allAlignments.add(bhs);
+                options.getTaxonomy().findAncestorAndStore(bhs);
+            }
+        
             br.close();
         } catch (Exception e) {
             System.out.println("BlastChunk exception");
@@ -53,10 +66,14 @@ public class BlastChunk {
     }
     
     public int getNumberOfAlignments() {
-        return alignments.size();
+        return allAlignments.size();
     }
     
-    public BlastAlignment getAlignment(int n) {
-        return alignments.get(n);
+    public BlastAlignment getTopHit(int n) {
+        return allAlignments.get(n).getAlignment(0);
+    }
+    
+    public BlastHitSet getHitSet(int n) {
+        return allAlignments.get(n);
     }
 }
