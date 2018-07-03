@@ -32,6 +32,8 @@ public class ChunkLoader extends SwingWorker {
         if (database == BlastFile.DATABASE_CARD) {
             frame.updateTableCard();
         } else if (database == BlastFile.DATABASE_NT) {
+            System.out.println("In doInBackground");
+            frame.updateSlidersNt();
             frame.updateTableNt();
         } else if (database == BlastFile.DATABASE_BACTERIA) {
             frame.updateTableBacteria();

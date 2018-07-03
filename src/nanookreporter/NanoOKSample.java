@@ -10,6 +10,7 @@ public class NanoOKSample {
     String sampleDirectory;
     String cardDir;
     String ntDir;
+    String bacteriaDir;
     BlastFile cardFile;
     BlastFile ntFile;
     BlastFile bacteriaFile;
@@ -20,9 +21,25 @@ public class NanoOKSample {
         sampleDirectory = directory;
         File sampleDir = new File(sampleDirectory);
         if (dirExists(sampleDirectory)) {
-            cardFile = new BlastFile(options, sampleDirectory + File.separator + "blastn_card", "blastn_card");
-            ntFile = new BlastFile(options, sampleDirectory + File.separator + "blastn_nt", "blastn_nt");
-            bacteriaFile = new BlastFile(options, sampleDirectory + File.separator + "blastn_bacteria", "blastn_bacteria");
+            cardDir = sampleDirectory + File.separator + "blastn_card";
+            ntDir = sampleDirectory + File.separator + "blastn_nt";
+            bacteriaDir = sampleDirectory + File.separator + "blastn_bacteria";
+            
+            if (!dirExists(cardDir)) {
+                cardDir = "";
+            }
+            
+            if (!dirExists(ntDir)) {
+                ntDir = "";
+            }
+            
+            if (!dirExists(bacteriaDir)) {
+                bacteriaDir = "";
+            }
+            
+            cardFile = new BlastFile(options, cardDir, "blastn_card");
+            ntFile = new BlastFile(options, ntDir, "blastn_nt");
+            bacteriaFile = new BlastFile(options, bacteriaDir, "blastn_bacteria");
         }
     }
     
@@ -69,6 +86,22 @@ public class NanoOKSample {
         return bacteriaFile;
     }
     
+    public String getCardDir() {
+        return cardDir;
+    }
+    
+    public String getNtDir() {
+        return ntDir;
+    }
+    
+    public String getBacteriaDir() {
+        return bacteriaDir;
+    }
+    
+    public String getSampleDir() {
+        return sampleDirectory;
+    }
+    
     public void writeCardSummaries(int type, int pf) {
         BlastChunkSet chunkSet = cardFile.getChunkSet(type, pf); 
         String reporterDir = sampleDirectory + File.separator + "reporter";
@@ -80,7 +113,7 @@ public class NanoOKSample {
         }
         
         
-        for (int c=0; c<=chunkSet.getNumberOfChunks(); c++) {
+        for (int c=0; c<=chunkSet.getLastChunkNumber(); c++) {
             String filename = reporterDir + File.separator + sd.getName() + "_" + BlastFile.getTypeFromInt(type) + "_" + BlastFile.getPassFailFromInt(pf) + "_card_summary_" + c + ".txt";
             chunkSet.countHits(c);
             chunkSet.writeSummaryFile(filename);            
@@ -101,7 +134,7 @@ public class NanoOKSample {
         try {
             PrintWriter pw = new PrintWriter(new FileWriter(reporterDir + File.separator + "chunktimes.txt")); 
 
-            for (int c=0; c<=chunkSet.getNumberOfChunks(); c++) {
+            for (int c=0; c<=chunkSet.getLastChunkNumber(); c++) {
                 long lastModified = chunkSet.getChunk(c).getLastModified();
                 pw.println(c + "\t" + dateFormat.format(lastModified));
             }

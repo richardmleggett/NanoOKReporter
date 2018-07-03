@@ -73,6 +73,7 @@ public class BlastChunkSet extends AbstractTableModel {
         
         // We always re-scan the last chunk
         if (chunks.size() > 0) {
+            System.out.println("Removing " + chunkCounter);
             chunks.remove(chunkCounter);
         }
         
@@ -80,7 +81,7 @@ public class BlastChunkSet extends AbstractTableModel {
             String filename = directory + File.separator + prefix + "_" + c + "_" + midfix + ".txt";
             File f = new File(filename);
             if (f.exists()) {
-                //System.out.println("Found " + filename);
+                System.out.println("Found " + filename);
                 nor.setStatus("File " + filename);
                 chunks.add(new BlastChunk(options, filename));
                 found = true;
@@ -91,11 +92,18 @@ public class BlastChunkSet extends AbstractTableModel {
             }
             c++;
             
-            // DEBUG
-            if (c >= (lastScan + 10)) {
-                lastScan = c;
-                break;
+            if (options.getChunksToLoad() != 0) {
+                if (c >= (lastScan + options.getChunksToLoad())) {
+                    lastScan = c;
+                    break;
+                }
             }
+            
+            // DEBUG
+            //if (c >= (lastScan + 10)) {
+            //    lastScan = c;
+            //    break;
+            //}
             //if ((doneScan == false) && (c == 10)) {
             //    break;
             //}
@@ -110,8 +118,12 @@ public class BlastChunkSet extends AbstractTableModel {
     public String getPrefix() {
         return prefix;
     }
-    
+
     public int getNumberOfChunks() {
+        return chunkCounter+1;
+    }
+    
+    public int getLastChunkNumber() {
         return chunkCounter;
     }
     

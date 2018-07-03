@@ -110,4 +110,21 @@ public class BlastAlignment {
         }
         return 0;
     }
+    
+    public int getQueryStart() {
+        return qstart;
+    }
+
+    public int getQueryEnd() {
+        return qend;
+    }
+
+    public int getSubjectStart() {
+        return sstart;
+    }
+
+    public int getSubjectEnd() {
+        return send;
+    }
+
 }

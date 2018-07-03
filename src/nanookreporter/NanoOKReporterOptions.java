@@ -1,17 +1,20 @@
 
 package nanookreporter;
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import javax.imageio.ImageIO;
 
 public class NanoOKReporterOptions {
     private Taxonomy taxonomy;
     private String prefsFile = System.getProperty("user.home") + File.separator + ".nanook_reporter.prefs";
     private String lastSample = "";
+    private int chunksToLoad = 0;
     
     public NanoOKReporterOptions() {
         taxonomy = new Taxonomy("/Users/leggettr/Documents/Projects/BAMBI/taxdump/nodes.dmp",
@@ -62,4 +65,14 @@ public class NanoOKReporterOptions {
         }
         
     }
+    
+    public void setChunksToLoad(int l) {
+        chunksToLoad = l;
+    }
+    
+    public int getChunksToLoad() {
+        return chunksToLoad;
+    }
+    
+
 }

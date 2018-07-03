@@ -9,9 +9,12 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
+import static nanookreporter.WalkOutResults.sortByValues;
 
 public class Taxonomy {
     private int circleDiameter = 32;
@@ -552,5 +555,32 @@ public class Taxonomy {
         drawConnections(g, n);
         drawNode(g, n);
         drawNode(g, unclassifiedNode);
+    }
+    
+    private void walkNode(Node n, HashMap counts) {
+        ArrayList<Node> children = n.getChildren();
+        int childrenIncluded = 0;
+
+        for (int i=0; i<children.size(); i++) {
+            Node c = children.get(i);
+            if (c.getSummarised() > 0) {
+                childrenIncluded++;
+                walkNode(c, counts);
+            }
+        }
+
+        if (childrenIncluded == 0) {
+            counts.put(getNameFromTaxonId(n.getId()), n.getAssigned());
+        }
+    }
+    
+    public Map<String, Integer> getLeafNodes() {
+        HashMap<String, Integer> counts = new HashMap<String, Integer>();
+        Node n = getNodeFromTaxonId(1L);
+        walkNode(n, counts);
+                
+        Map<String, Integer> sortedLeafCounts = WalkOutResults.sortByValues(counts);
+
+        return sortedLeafCounts;
     }
 }

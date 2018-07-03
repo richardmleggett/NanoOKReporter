@@ -78,7 +78,7 @@ public class BlastFile {
     public void countSet(int type, int pf) {
         int index = getIndexIntoChunkSet(type, pf);
         BlastChunkSet cs = chunkSet.get(index);        
-        cs.countHits(cs.getNumberOfChunks());
+        cs.countHits(cs.getLastChunkNumber());
     }
     
     public void countUptoSet(int type, int pf, int n) {
