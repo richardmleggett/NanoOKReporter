@@ -523,7 +523,7 @@ public class NanoOKReporter extends javax.swing.JFrame {
         jLabel2.setText("Chunks: ");
         jToolBar1.add(jLabel2);
 
-        chunksToLoadCombo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "All", "1", "10", "100" }));
+        chunksToLoadCombo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "All", "1", "2", "5", "10", "100" }));
         chunksToLoadCombo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 chunksToLoadComboActionPerformed(evt);

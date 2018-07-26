@@ -7,7 +7,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -99,6 +102,14 @@ public class Taxonomy {
 
         displayMemory();
         
+        //System.out.println("Node 2 is "+getNameFromTaxonId(2L));
+        //outputTaxonIdsFromNode(2L, "/Users/leggettr/Documents/Databases/taxonomy/bacteria_taxonids.txt");
+        //System.out.println("Node 2157 is "+getNameFromTaxonId(2157L));
+        //outputTaxonIdsFromNode(2157L, "/Users/leggettr/Documents/Databases/taxonomy/archea_taxonids.txt");
+        //System.out.println("Node 10239 is "+getNameFromTaxonId(10239L));        
+        //outputTaxonIdsFromNode(10239L, "/Users/leggettr/Documents/Databases/taxonomy/viruses_taxonids.txt");        
+        //System.exit(1);
+        
 //        try {
 //            FileOutputStream fos = new FileOutputStream("~/Desktop/acc2tax.ser");
 //            ObjectOutputStream oos = new ObjectOutputStream(fos);
@@ -115,6 +126,28 @@ public class Taxonomy {
         
         //System.out.println("Enterobacter aerogenes = " + this.getTaxonIdFromName("Enterobacter aerogenes"));
         //System.out.println("" + );
+    }
+    
+    public void outputTaxonIdsFromNode(long id, String filename) {
+        System.out.println("Writing "+filename);
+        try {
+            PrintWriter pw = new PrintWriter(new FileWriter(filename)); 
+            outputNodeIdAndChildrenToFile(getNodeFromTaxonId(id), pw);
+            pw.close();
+        } catch (IOException e) {
+            System.out.println("outputTaxonIdsFromNode exception:");
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+    
+    public void outputNodeIdAndChildrenToFile(Node n, PrintWriter pw) {
+        pw.println(n.getId());
+        ArrayList<Node> children = n.getChildren();
+        for (int i=0; i<children.size(); i++) {
+            Node c = children.get(i);
+            outputNodeIdAndChildrenToFile(c, pw);
+        }
     }
 
     public void displayMemory() {
