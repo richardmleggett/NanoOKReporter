@@ -46,7 +46,7 @@ public class ChunkLoader extends SwingWorker {
     
     @Override
     public void done() {
-        frame.loadFinished();
+        frame.loadFinished(database);
         frame.setCursor(Cursor.getDefaultCursor());
     }
 }

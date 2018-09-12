@@ -50,7 +50,7 @@ public class AROMap {
         if (name != null) {
             n = name;
         } else {
-            System.out.println("Can't find "+a);
+            System.out.println("getNameFromAccession: Can't find "+a);
         }
         return n;
     }

@@ -1,14 +1,16 @@
 package nanookreporter;
 
+import java.awt.Cursor;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.PrintWriter;
+import javax.swing.SwingWorker;
 import org.knowm.xchart.*;
 import org.knowm.xchart.BitmapEncoder.*;
 
-public class WalkOutAnalyser {
+public class WalkOutAnalyser extends SwingWorker {
     NanoOKReporter reporter;
     NanoOKReporterOptions options;
     NanoOKSample sample;
@@ -36,7 +38,7 @@ public class WalkOutAnalyser {
         }
     }
     
-    public void analyse() {
+    public String doInBackground() throws Exception {
         String cardDir = sample.getCardDir();
         String bacteriaDir = sample.getBacteriaDir();
         String prefix = "all_Template_pass";
@@ -47,6 +49,8 @@ public class WalkOutAnalyser {
         int chunk = 0;
         boolean moreChunks = true;
         
+        reporter.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+
         try {
             pw = new PrintWriter(new FileWriter(summaryFilename)); 
             pw.println("ReadId\tHostHit\tOverlap\tIndependent\tCARDhit\tChunk");
@@ -63,13 +67,14 @@ public class WalkOutAnalyser {
             File bacteriaFile = new File(bacteriaFilename);
             if (cardFile.exists() && cardFile.isFile()) {
                 if (bacteriaFile.exists() && bacteriaFile.isFile()) {
-                    System.out.println("Reading chunk "+chunk);
+                    //System.out.println("Reading chunk "+chunk);
+                    reporter.setStatus("Reading chunk " + chunk);
                     WalkOutChunk woc = new WalkOutChunk(chunk);
                     woc.loadChunks(cardFile, bacteriaFile);
                     woc.processHits(results, pw);
 
                     chunk++;
-                    if (chunk > 844) {
+                    if ((chunk > 844) || (chunk > options.getChunksToLoad())) {
                         moreChunks=false;
                     }
                 } else {
@@ -86,6 +91,16 @@ public class WalkOutAnalyser {
             pw.close();
         }
         
+        reporter.setStatus("Writing walkout results...");
         results.writeResults(reporter, walkoutDir);
+        reporter.setStatus("Ok");
+        
+        return null;
     }
+    
+    @Override
+    public void done() {
+        reporter.walkoutFinished();
+        reporter.setCursor(Cursor.getDefaultCursor());
+    }    
 }

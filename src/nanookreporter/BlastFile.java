@@ -30,14 +30,18 @@ public class BlastFile {
     public ArrayList<BlastChunkSet> chunkSet = new ArrayList<BlastChunkSet>();
     private NanoOKReporterOptions options;
     public String midfix;
+    private int taxonomyTreeId;
     
-    public BlastFile(NanoOKReporterOptions o, String directory, String m) {
+    public BlastFile(NanoOKReporterOptions o, String directory, String m, int i) {
         midfix = m;
         options = o;
-        chunkSet.add(CHUNKSET_2D_PASS, new BlastChunkSet(options, directory, "all_2D_pass", midfix));
-        chunkSet.add(CHUNKSET_2D_FAIL, new BlastChunkSet(options, directory, "all_2D_fail", midfix));
-        chunkSet.add(CHUNKSET_TEMPLATE_PASS, new BlastChunkSet(options, directory, "all_Template_pass", midfix));
-        chunkSet.add(CHUNKSET_TEMPLATE_FAIL, new BlastChunkSet(options, directory, "all_Template_fail", midfix));
+        taxonomyTreeId = i;
+        
+        System.out.println("BlastFile "+directory+" taxonomy id "+i);
+        chunkSet.add(CHUNKSET_2D_PASS, new BlastChunkSet(options, directory, "all_2D_pass", midfix, -1));
+        chunkSet.add(CHUNKSET_2D_FAIL, new BlastChunkSet(options, directory, "all_2D_fail", midfix, -1));
+        chunkSet.add(CHUNKSET_TEMPLATE_PASS, new BlastChunkSet(options, directory, "all_Template_pass", midfix, taxonomyTreeId));
+        chunkSet.add(CHUNKSET_TEMPLATE_FAIL, new BlastChunkSet(options, directory, "all_Template_fail", midfix, -1));
 
         //chunkSet.add(CHUNKSET_2D_PASS, new BlastChunkSet(directory, "all_2D_pass", midfix));
         //chunkSet.add(CHUNKSET_2D_FAIL, new BlastChunkSet(directory, "bambi_4_20102016_fail_2d", "blast_card"));

@@ -61,6 +61,7 @@ public class SummaryPanel extends JPanel {
     public void processTaxonomy(NanoOKSample s) {
         Map<String, Integer> leafNodes = options.getTaxonomy().getLeafNodes();
         String imageFilename = s.getSampleDir() + File.separator + "summary_taxon";
+        System.out.println("Total assigned reads is " + options.getTaxonomy().getTotalAssignedReads());
          
         final FrequencyAnalyzer frequencyAnalyzer = new FrequencyAnalyzer();
         frequencyAnalyzer.setWordFrequenciesToReturn(300);
@@ -78,6 +79,7 @@ public class SummaryPanel extends JPanel {
             speciesPie.getStyler().setLegendPadding(4);
 
             int n = 0;
+            int c = 0;
             for (Map.Entry<String, Integer> entry : leafNodes.entrySet())
             {
                 String id = entry.getKey();
@@ -88,30 +90,30 @@ public class SummaryPanel extends JPanel {
                 }
                 
                 wordFrequencies.add(new WordFrequency(id, count));
+                c += count;
 
                 n++;
-                //if (n == 20) {
-                //    break;
-                //}
+                if (n == 20) {
+                    break;
+                }
             }
-
+            
             BitmapEncoder.saveBitmap(speciesPie, imageFilename, BitmapEncoder.BitmapFormat.PNG);
-            VectorGraphicsEncoder.saveVectorGraphic(speciesPie, imageFilename, VectorGraphicsEncoder.VectorGraphicsFormat.PDF);
+            //VectorGraphicsEncoder.saveVectorGraphic(speciesPie, imageFilename, VectorGraphicsEncoder.VectorGraphicsFormat.PDF);
             pieImage = ImageIO.read(new File(imageFilename + ".png"));
 
 
-            final Dimension dimension = new Dimension(800, 800);
-            WordCloud wordCloud = new WordCloud(dimension, CollisionMode.PIXEL_PERFECT);
-            wordCloud.setPadding(2);
-            wordCloud.setBackground(new CircleBackground(400));
-            wordCloud.setBackgroundColor(Color.WHITE);
-            wordCloud.setKumoFont(new KumoFont(new Font("Arial", Font.PLAIN, 20)));
-            wordCloud.setColorPalette(new ColorPalette(new Color(0x4055F1), new Color(0x408DF1), new Color(0x40AAF1), new Color(0x40C5F1), new Color(0x40D3F1), new Color(0xFFFFFF)));
-            //wordCloud.setFontScalar(new LinearFontScalar(10, 40));
+            //final Dimension dimension = new Dimension(800, 800);
+            //WordCloud wordCloud = new WordCloud(dimension, CollisionMode.PIXEL_PERFECT);
+            //wordCloud.setPadding(2);
+            //wordCloud.setBackground(new CircleBackground(400));
+            //wordCloud.setBackgroundColor(Color.WHITE);
+            //wordCloud.setKumoFont(new KumoFont(new Font("Arial", Font.PLAIN, 20)));
+            //wordCloud.setColorPalette(new ColorPalette(new Color(0x4055F1), new Color(0x408DF1), new Color(0x40AAF1), new Color(0x40C5F1), new Color(0x40D3F1), new Color(0xFFFFFF)));
             
-            wordCloud.setFontScalar(new SqrtFontScalar(10, 40));
-            wordCloud.build(wordFrequencies);
-            wordCloud.writeToFile(imageFilename + "_wordcloud.png");
+            //wordCloud.setFontScalar(new SqrtFontScalar(10, 40));
+            //wordCloud.build(wordFrequencies);
+            //wordCloud.writeToFile(imageFilename + "_wordcloud.png");
         } catch (Exception e) {
             System.out.println("Exception in processTaxonomy:");
             e.printStackTrace();

@@ -30,10 +30,20 @@ public class Taxonomy {
     private Hashtable<String, Long> accessionToTaxon = new Hashtable();
     private Node unclassifiedNode = new Node(0L);
     private long humanId;
+    private long bacteriaId;
+    private long lambdaId;
+    private long vectorsId;
+    private long ecoliId;
     private int maxRow = 0;
     private int maxColumn = 0;
     private int plotWidth = 2000;
     private int plotHeight = 2000;
+    private int nTrees = 0;
+    private boolean warningId = false;
+    private int totalAssignedReads = 0;
+    private int assignedThreshold = 2;
+    private int otherCount = 0;
+    private int totalCountCheck = 0;
     
     public Taxonomy(String nodesFilename, String namesFilename, String mapFilename) {
         try {
@@ -72,7 +82,27 @@ public class Taxonomy {
 
                     if (fields[2].equals("Homo sapiens")) {
                         humanId = id;
+                        System.out.println("Got human ID");
                     }
+
+                    if (fields[2].equals("Bacteria")) {
+                        bacteriaId = id;
+                        System.out.println("Got bacteria ID");
+                    }
+                    
+                    if (fields[2].equals("Escherichia coli")) {
+                        ecoliId = id;
+                    }
+                    
+                    if (fields[2].equals("Escherichia virus Lambda")) {
+                        lambdaId = id;
+                        System.out.println("Warning: need to check classification to lambda");
+                    }
+                    
+                    if (fields[2].equals("vectors")) {
+                        vectorsId = id;
+                        System.out.println("Warning: need to check classification to cloning vectors");
+                    }                    
                 } else if (fields[6].equals("synonym")) {
                     long id = Long.parseLong(fields[0]);
                     idByName.put(fields[2], id);                    
@@ -80,6 +110,11 @@ public class Taxonomy {
             }
             br.close();
             System.out.println("Processed "+nameById.size()+" nodes");
+            
+            if ((lambdaId == 0) || (humanId == 0) || (vectorsId == 0) || (bacteriaId == 0) || (ecoliId == 0)) {
+                System.out.println("Didn't get one of the Ids");
+                System.exit(0);
+            }
             
 //            System.out.println("Reading "+mapFilename);
 //            br = new BufferedReader(new FileReader(mapFilename));
@@ -276,6 +311,8 @@ public class Taxonomy {
     private void countRead(Long id) {
         Node n = getNodeFromTaxonId(id);
         
+        totalCountCheck++;
+        
         if (n == null) {
             unclassifiedNode.incrementAssigned();
         } else {
@@ -305,7 +342,7 @@ public class Taxonomy {
         String genus = s;
         String triplet = s;
         
-        if (parts[0].equals("PREDICTED:") || (parts[0].equals("Uncultured"))) {
+        if (parts[0].equals("PREDICTED:") || (parts[0].equals("Uncultured")) || (parts[0].equals("Synthetic"))) {
             if (parts.length >= 4) {
                 species = parts[1] + " " + parts[2];
                 genus = parts[1];
@@ -327,9 +364,19 @@ public class Taxonomy {
                 if (id == null) {
                     if (species.startsWith("Human")) {
                         id = humanId;
+                    } else if (species.equals("Artificial cloning")) {
+                        id = vectorsId;
+                    } else if (species.startsWith("Cloning vectors") || (species.startsWith("Cloning vector"))) {
+                        id = vectorsId;
+                    } else if (species.equalsIgnoreCase("Unidentified bacterium")) {
+                        id = bacteriaId;
+                    } else if (s.contains("vector lambda") || (species.startsWith("Lambda genome"))) {
+                        id = lambdaId;
+                    } else if (s.startsWith("E.coli")) {
+                        id = ecoliId;
                     } else {
                         //System.out.println("Couldn't parse "+s+" ("+species+")");
-                        unclassifiedNode.incrementAssigned();
+                        //unclassifiedNode.incrementAssigned();
                     }
                 }
             }
@@ -341,13 +388,15 @@ public class Taxonomy {
     }
     
     public void parseTaxonomyAndCount(String s) {
+        System.out.println("ERROR: Shouldn't get to parseTaxonomyAndCount");
+        System.exit(1);
         String[] parts = s.split("(,|\\s)");
         String species;
         String genus;
         String triplet;
         //System.out.println(species);
         
-        if (parts[0].equals("PREDICTED:") || (parts[0].equals("Uncultured"))) {
+        if (parts[0].equals("PREDICTED:") || (parts[0].equals("Uncultured")) || (parts[0].equals("Synthetic"))) {
             species = parts[1] + " " + parts[2];
             genus = parts[1];
             triplet = parts[1] + " " + parts[2] + " " + parts[3];
@@ -376,8 +425,18 @@ public class Taxonomy {
                 } else {                
                     if (species.startsWith("Human")) {
                         countRead(humanId);
+                    } else if (species.equals("Artificial cloning")) {
+                        id = vectorsId;
+                    } else if (species.startsWith("Cloning vectors") || (species.startsWith("Cloning vector"))) {
+                        id = vectorsId;
+                    } else if (species.equalsIgnoreCase("Unidentified bacterium")) {
+                        id = bacteriaId;
+                    } else if (s.contains("vector lambda") || (species.startsWith("Lambda genome"))) {
+                        countRead(lambdaId);
+                    } else if (s.startsWith("E.coli")) {
+                        countRead(ecoliId);
                     } else {
-                        //System.out.println("Couldn't parse "+s+" ("+species+")");
+                        //System.out.println("Couldn't parse and count "+s+" ("+species+")");
                         unclassifiedNode.incrementAssigned();
                     }
                 }
@@ -387,50 +446,59 @@ public class Taxonomy {
         //System.out.println("["+getTaxonomyStringFromName(species)+"]");
     }
     
-    public void findAncestorAndStore(BlastHitSet bhs) {
-        //bhs.displayInfo();
-        long ancestor = 0;
-        boolean same = true;
-        int level = 1;
-        int maxLevel = 1000;
-        
-        //System.out.println("------------ New match -----------");
-        
-        for (int i=0; i<bhs.getNumberOfAlignments(); i++) {
-            //System.out.print(this.getTaxonomyStringFromId(bhs.getAlignment(i).getLeafNode()));
-            //System.out.println(" "+bhs.getAlignment(i).getTaxonLevel());
-            if (bhs.getAlignment(i).getTaxonLevel() < maxLevel) {
-                maxLevel = bhs.getAlignment(i).getTaxonLevel();
-            }
-            //ArrayList tip = bhs.getAlignment(i).getTaxonIdPath();
-            //for (int j=0; j<tip.size(); j++) {
-            //    if (j > 0) {
-            //        System.out.print(",");
-            //    }
-            //    System.out.print(tip.get(j));
-            //}
-            //System.out.println("");
-        }
-                
-        while ((same == true) && (level <= maxLevel)) {
-            long common = -1;
-            for (int i=0; i<bhs.getNumberOfAlignments(); i++) {
-                if (common == -1) {
-                    common = bhs.getAlignment(i).getTaxonNode(level);
-                } else if (bhs.getAlignment(i).getTaxonNode(level) != common) {
-                    same = false;
+    public void findAncestorAndStore(BlastHitSet bhs, int treeId) {
+        if (treeId == 0) {
+            //bhs.displayInfo();
+            long ancestor = 0;
+            boolean same = true;
+            int level = 1;
+            int maxLevel = 1000;
+            int maxToParse = 5;
+            int loopTo = bhs.getNumberOfAlignments() < maxToParse ? bhs.getNumberOfAlignments():maxToParse;
+
+             //System.out.println("------------ New match -----------");
+            
+            for (int i=0; i<loopTo; i++) {
+                //System.out.print(this.getTaxonomyStringFromId(bhs.getAlignment(i).getLeafNode()));
+                //System.out.println(" "+bhs.getAlignment(i).getTaxonLevel());
+                if (bhs.getAlignment(i).getTaxonLevel() < maxLevel) {
+                    maxLevel = bhs.getAlignment(i).getTaxonLevel();
                 }
+                //ArrayList tip = bhs.getAlignment(i).getTaxonIdPath();
+                //for (int j=0; j<tip.size(); j++) {
+                //    if (j > 0) {
+                //        System.out.print(",");
+                //    }
+                //    System.out.print(tip.get(j));
+                //}
+                //System.out.println("");
             }
 
-            if (same == true) {
-                ancestor = common;
-                //System.out.println("Match on " + this.getNameFromTaxonId(common));
-                level++;
-            }         
+            while ((same == true) && (level <= maxLevel)) {
+                long common = -1;
+                for (int i=0; i<loopTo; i++) {
+                    if (common == -1) {
+                        common = bhs.getAlignment(i).getTaxonNode(level);
+                    } else if (bhs.getAlignment(i).getTaxonNode(level) != common) {
+                        same = false;
+                    }
+                }
+
+                if (same == true) {
+                    ancestor = common;
+                    //System.out.println("Match on " + this.getNameFromTaxonId(common));
+                    level++;
+                }         
+            }
+
+            //System.out.println("Ancestor " + this.getNameFromTaxonId(ancestor));
+            countRead(ancestor);
+        } else {
+            if (!warningId) {
+                System.out.println("Not storing taxonomy for tree ID other than 0");
+                warningId = true;
+            }
         }
-        
-        //System.out.println("Ancestor " + this.getNameFromTaxonId(ancestor));
-        countRead(ancestor);
     }
     
     private void displayLevel(Node n, int l) {
@@ -491,6 +559,10 @@ public class Taxonomy {
         unclassifiedNode.setDisplayPosition(1, maxRow+1);
         plotWidth = ((maxColumn+1)*colWidth) + 200;
         plotHeight = (maxRow+2)*rowHeight;
+    }
+    
+    public int getUnclassifiedCount() {
+        return unclassifiedNode.getSummarised();
     }
     
     private void connectNode(Graphics g, Node n, Node c) {
@@ -579,10 +651,12 @@ public class Taxonomy {
         if (childrenIncluded == 0) {
             String taxonString = getNameFromTaxonId(n.getId());
             g.drawString(taxonString, colToX(n.getDisplayCol()) + (diameter/2) + 4, rowToY(n.getDisplayRow()) + 4);
+            //System.out.println("Label "+taxonString + " " + n.getDisplayCol() + " " + n.getDisplayRow());
         }
     }
     
     public void drawTree(Graphics g) {
+        //System.out.println("Drawing tree...");
         Node n = getNodeFromTaxonId(1L);
         g.setFont(new Font("Arial", Font.PLAIN, 12)); 
         drawConnections(g, n);
@@ -602,18 +676,38 @@ public class Taxonomy {
             }
         }
 
-        if (childrenIncluded == 0) {
-            counts.put(getNameFromTaxonId(n.getId()), n.getAssigned());
-        }
+        //if (childrenIncluded == 0) {
+            if (n.getAssigned() >= assignedThreshold) {
+                counts.put(getNameFromTaxonId(n.getId())+ " ("+n.getAssigned()+")", n.getAssigned());
+                totalAssignedReads += n.getAssigned();
+            } else {
+                otherCount++;
+            }
+        //}
+    }
+    
+    public int getTotalAssignedReads() {
+        return totalAssignedReads;
     }
     
     public Map<String, Integer> getLeafNodes() {
         HashMap<String, Integer> counts = new HashMap<String, Integer>();
         Node n = getNodeFromTaxonId(1L);
+        totalAssignedReads = 0;
+        otherCount = 0;
         walkNode(n, counts);
+        System.out.println("otherCount="+otherCount);
+        System.out.println("unclassified assigned="+unclassifiedNode.getAssigned());
+        System.out.println("total count "+totalCountCheck);
+        counts.put("Other ("+otherCount+")", otherCount);
+        counts.put("Unclassified ("+unclassifiedNode.getAssigned()+")", unclassifiedNode.getAssigned());
                 
         Map<String, Integer> sortedLeafCounts = WalkOutResults.sortByValues(counts);
 
         return sortedLeafCounts;
+    }
+    
+    public int registerTree() {
+        return nTrees++;
     }
 }

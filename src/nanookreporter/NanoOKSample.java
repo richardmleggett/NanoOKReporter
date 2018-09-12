@@ -24,37 +24,47 @@ public class NanoOKSample {
             cardDir = sampleDirectory + File.separator + "blastn_card";
             ntDir = sampleDirectory + File.separator + "blastn_nt";
             bacteriaDir = sampleDirectory + File.separator + "blastn_bacteria";
-            
-            if (!dirExists(cardDir)) {
-                cardDir = "";
-            }
-            
-            if (!dirExists(ntDir)) {
+                        
+            if (dirExists(ntDir)) {
+                int id = options.getTaxonomy().registerTree();
+                System.out.println("NT tree ID: "+ id);
+                ntFile = new BlastFile(options, ntDir, "blastn_nt", id);
+            } else {
                 ntDir = "";
             }
             
-            if (!dirExists(bacteriaDir)) {
+            if (dirExists(bacteriaDir)) {
+                int id = options.getTaxonomy().registerTree();
+                System.out.println("Bacteria tree ID: " + id);
+                bacteriaFile = new BlastFile(options, bacteriaDir, "blastn_bacteria", id);
+            } else {
                 bacteriaDir = "";
-            }
+            }            
             
-            cardFile = new BlastFile(options, cardDir, "blastn_card");
-            ntFile = new BlastFile(options, ntDir, "blastn_nt");
-            bacteriaFile = new BlastFile(options, bacteriaDir, "blastn_bacteria");
+            if (dirExists(cardDir)) {
+                int id = options.getTaxonomy().registerTree();
+                System.out.println("CARD tree ID: "+ id);
+                cardFile = new BlastFile(options, cardDir, "blastn_card", id);
+            } else {
+                cardDir = "";
+            }
+
         }
     }
     
     public void readData(int db, int type, int pf, NanoOKReporter nor) {
-        if (db == BlastFile.DATABASE_CARD) {
+        if ((db == BlastFile.DATABASE_CARD) && (cardFile != null)) {
             nor.setStatus("Reading CARD chunks...");
             cardFile.rescan(nor, type, pf);
-        } else if (db == BlastFile.DATABASE_NT) {
+        } else if ((db == BlastFile.DATABASE_NT) && (ntFile != null)) {
             nor.setStatus("Reading NT chunks...");
             ntFile.rescan(nor, type, pf);
             options.getTaxonomy().prepareTreePlot();
             //options.getTaxonomy().displayTaxonomy();
-        } else if (db == BlastFile.DATABASE_BACTERIA) {
+        } else if ((db == BlastFile.DATABASE_BACTERIA) && (bacteriaFile != null)) {
             nor.setStatus("Reading bacteria chunks...");
             bacteriaFile.rescan(nor, type, pf);
+            options.getTaxonomy().prepareTreePlot();
         }
     }
     

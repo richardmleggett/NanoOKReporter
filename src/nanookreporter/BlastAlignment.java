@@ -17,14 +17,15 @@ public class BlastAlignment {
     private double evalue;
     private double bitscore;
     private String stitle;
+    private int taxonId = -1;
     private boolean validAlignment = false;
     private long leafNode = 0;
     private ArrayList<Long> taxonIdPath;
     
     public BlastAlignment(String a) {
-        String fields[] = a.split("\\s+", 13);
+        String fields[] = a.split("\t", 14);
         
-        if (fields.length == 13) {
+        if (fields.length >= 13) {
             try {
                 qseqid = fields[0];
                 sseqid = fields[1];
@@ -40,6 +41,11 @@ public class BlastAlignment {
                 bitscore = Double.parseDouble(fields[11]);
                 stitle = fields[12];
                 validAlignment = true;
+                if (fields.length == 14) {
+                    taxonId = Integer.parseInt(fields[13]);
+                } else {
+                    //System.out.println("No taxonid");
+                }
             } catch (Exception e) {
                 System.out.println("Error parsing alignment - incomplete file?");
             }
@@ -77,12 +83,16 @@ public class BlastAlignment {
     }
     
     public void cacheTaxonIdPath(Taxonomy t) {
-        Long id = t.parseTaxonomyToId(stitle);
-        
-        if (id != null) {
-            leafNode = id;
+        if (taxonId == -1) {
+            Long id = t.parseTaxonomyToId(stitle);
+
+            if (id != null) {
+                leafNode = id;
+            } else {
+                leafNode = 0;
+            }
         } else {
-            leafNode = 0;
+            leafNode = taxonId;
         }
 
         taxonIdPath = t.getTaxonIdPathFromId(leafNode);

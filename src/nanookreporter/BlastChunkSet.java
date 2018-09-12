@@ -41,13 +41,14 @@ public class BlastChunkSet extends AbstractTableModel {
     private boolean doneScan = false;
     private NanoOKReporterOptions options;
     private int lastScan = 0;
+    private int taxonomyTreeId;
 
-
-    public BlastChunkSet(NanoOKReporterOptions o, String d, String p, String m) {
+    public BlastChunkSet(NanoOKReporterOptions o, String d, String p, String m, int i) {
         options = o;
         directory = d;
         prefix = p;
         midfix = m;
+        taxonomyTreeId = i;
         
         if (midfix.equals("blastn_card")) {
             numberOfCols = 5;
@@ -83,7 +84,7 @@ public class BlastChunkSet extends AbstractTableModel {
             if (f.exists()) {
                 System.out.println("Found " + filename);
                 nor.setStatus("File " + filename);
-                chunks.add(new BlastChunk(options, filename));
+                chunks.add(new BlastChunk(options, filename, taxonomyTreeId));
                 found = true;
                 chunkCounter = c;                
             } else {
@@ -276,7 +277,7 @@ public class BlastChunkSet extends AbstractTableModel {
             }
         }
 
-        System.out.println("NT Table updated with "+numberOfRows+ " rows");
+        System.out.println("Table updated with "+numberOfRows+ " rows");
     }
     
     public void updateTable(JTable table) {

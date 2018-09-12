@@ -14,7 +14,10 @@ public class NanoOKReporterOptions {
     private Taxonomy taxonomy;
     private String prefsFile = System.getProperty("user.home") + File.separator + ".nanook_reporter.prefs";
     private String lastSample = "";
+    private NanoOKSample sample;
+    private String sampleName;
     private int chunksToLoad = 0;
+    private int refreshTime = 1;
     
     public NanoOKReporterOptions() {
         taxonomy = new Taxonomy("/Users/leggettr/Documents/Projects/BAMBI/taxdump/nodes.dmp",
@@ -25,6 +28,30 @@ public class NanoOKReporterOptions {
     
     public Taxonomy getTaxonomy() {
         return taxonomy;
+    }
+    
+    public void setSample(NanoOKSample s) {
+        sample = s;
+    }
+    
+    public NanoOKSample getSample() {
+        return sample;
+    }
+    
+    public int getRefreshTime() {
+        return refreshTime;
+    }
+    
+    public void setRefreshTime(int t) {
+        refreshTime = t;
+    }
+    
+    public void setSampleName(String s) {
+        sampleName = s;
+    }
+    
+    public String getSampleName() {
+        return sampleName;
     }
     
     public void readPrefs() {

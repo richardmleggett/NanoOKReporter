@@ -12,11 +12,13 @@ public class BlastChunk {
     private ArrayList<BlastHitSet> allAlignments = new ArrayList<BlastHitSet>();
     private long lastModified = 0;
     private NanoOKReporterOptions options;
+    private int taxonomyTreeId;
     
-    public BlastChunk(NanoOKReporterOptions o, String filename) {
+    public BlastChunk(NanoOKReporterOptions o, String filename, int i) {
         String lastId = "";
         Double lastE = 0.0;
         options = o;
+        taxonomyTreeId = i;
         
         File f = new File(filename);
         lastModified = f.lastModified();
@@ -36,7 +38,7 @@ public class BlastChunk {
                     } else {                       
                         if (bhs != null) {
                             allAlignments.add(bhs);
-                            options.getTaxonomy().findAncestorAndStore(bhs);
+                            options.getTaxonomy().findAncestorAndStore(bhs, taxonomyTreeId);
                         }
                         lastId = ba.getQueryId();
                         lastE = ba.getEValue();
@@ -50,7 +52,7 @@ public class BlastChunk {
             // Deal with the bhs we won't have processed
             if (bhs != null) {
                 allAlignments.add(bhs);
-                options.getTaxonomy().findAncestorAndStore(bhs);
+                options.getTaxonomy().findAncestorAndStore(bhs, taxonomyTreeId);
             }
         
             br.close();

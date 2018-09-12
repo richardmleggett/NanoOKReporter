@@ -9,6 +9,7 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.MenuItem;
 import java.awt.Rectangle;
 import java.awt.SplashScreen;
 import java.awt.Toolkit;
@@ -16,7 +17,10 @@ import java.awt.Window;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Timer;
 import javax.swing.JFileChooser;
+import javax.swing.JMenuItem;
 import javax.swing.JTable;
 
 /**
@@ -36,6 +40,10 @@ public class NanoOKReporter extends javax.swing.JFrame {
     private int[] cardColumnWidths = {0, 0, 0, 0, 0};
     private int[] ntColumnWidths = {0, 0, 0, 0};
     private int bacteriaColumnWidths[] = {0, 0, 0, 0};
+    private Timer refreshTimer = new Timer();
+    private boolean ntChunkLoading = false;
+    private boolean bacteriaChunkLoading = false;
+    private boolean cardChunkLoading = false;
     
     /**
      * Creates new form ReporterFrame
@@ -67,10 +75,10 @@ public class NanoOKReporter extends javax.swing.JFrame {
         taxonomyPanel.setOptions(options);
         summaryPanel.setOptions(options);
         
-        if (options.getLastSample() != "") {
+        //if (options.getLastSample() != "") {
             //sampleTextField.setText(options.getLastSample());
-            setSampleDirSelected(options.getLastSample());
-        }
+        //    setSampleDirSelected(options.getLastSample());
+        //}
     }
 
     /**
@@ -137,15 +145,18 @@ public class NanoOKReporter extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         chunksToLoadCombo = new javax.swing.JComboBox<>();
         jSeparator4 = new javax.swing.JToolBar.Separator();
+        jLabel1 = new javax.swing.JLabel();
+        refreshCombo = new javax.swing.JComboBox<>();
         loadNtButton = new javax.swing.JButton();
         loadBacteriaButton = new javax.swing.JButton();
         loadCardButton = new javax.swing.JButton();
-        WalkButton = new javax.swing.JButton();
+        walkButton = new javax.swing.JButton();
         statusPanel = new javax.swing.JPanel();
         progressLabel = new javax.swing.JLabel();
         mainMenuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         openMenuItem = new javax.swing.JMenuItem();
+        databaseMenu = new javax.swing.JMenu();
         actionMenu = new javax.swing.JMenu();
         saveCardSummaryItem = new javax.swing.JMenuItem();
         saveChunkTimesItem = new javax.swing.JMenuItem();
@@ -532,6 +543,17 @@ public class NanoOKReporter extends javax.swing.JFrame {
         jToolBar1.add(chunksToLoadCombo);
         jToolBar1.add(jSeparator4);
 
+        jLabel1.setText("Refresh:");
+        jToolBar1.add(jLabel1);
+
+        refreshCombo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Off", "1", "2", "5", "10", "30", "60" }));
+        refreshCombo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                refreshComboActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(refreshCombo);
+
         loadNtButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/nanookreporter/icon_nt.png"))); // NOI18N
         loadNtButton.setText("nt");
         loadNtButton.setBorder(null);
@@ -574,19 +596,19 @@ public class NanoOKReporter extends javax.swing.JFrame {
         });
         jToolBar1.add(loadCardButton);
 
-        WalkButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/nanookreporter/icon_walking.png"))); // NOI18N
-        WalkButton.setText("Walk");
-        WalkButton.setBorder(null);
-        WalkButton.setFocusable(false);
-        WalkButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        WalkButton.setPreferredSize(new java.awt.Dimension(35, 43));
-        WalkButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        WalkButton.addActionListener(new java.awt.event.ActionListener() {
+        walkButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/nanookreporter/icon_walking.png"))); // NOI18N
+        walkButton.setText("Walk");
+        walkButton.setBorder(null);
+        walkButton.setFocusable(false);
+        walkButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        walkButton.setPreferredSize(new java.awt.Dimension(35, 43));
+        walkButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        walkButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                WalkButtonActionPerformed(evt);
+                walkButtonActionPerformed(evt);
             }
         });
-        jToolBar1.add(WalkButton);
+        jToolBar1.add(walkButton);
 
         progressLabel.setText("Ready");
 
@@ -610,6 +632,9 @@ public class NanoOKReporter extends javax.swing.JFrame {
         fileMenu.add(openMenuItem);
 
         mainMenuBar.add(fileMenu);
+
+        databaseMenu.setText("Databases");
+        mainMenuBar.add(databaseMenu);
 
         actionMenu.setText("Actions");
         actionMenu.addActionListener(new java.awt.event.ActionListener() {
@@ -724,31 +749,46 @@ public class NanoOKReporter extends javax.swing.JFrame {
         return pf;
     }
     
+    public void startChunkLoader(int db) {
+        if (((db == BlastFile.DATABASE_NT) && (ntChunkLoading)) ||
+            ((db == BlastFile.DATABASE_BACTERIA) && (bacteriaChunkLoading)) ||
+            ((db == BlastFile.DATABASE_CARD) && (cardChunkLoading))) {
+            System.out.println("Already loading chunks...");
+        } else {            
+            if (db == BlastFile.DATABASE_NT) {
+                ntChunkLoading = true;
+            } else if (db == BlastFile.DATABASE_BACTERIA) {
+                bacteriaChunkLoading = true;
+                System.out.println("Bacteria ChunkLoader");
+            } else if (db == BlastFile.DATABASE_CARD) {
+                cardChunkLoading = true;
+            }
+            
+            ChunkLoader loader = new ChunkLoader(this,
+                                                 sample,
+                                                 db,
+                                                 getSelectedFileType(),
+                                                 getSelectedPf());
+            loader.execute();
+        }
+    }
+    
+    public void triggerRefresh() {
+        startChunkLoader(BlastFile.DATABASE_BACTERIA);
+        startChunkLoader(BlastFile.DATABASE_NT);
+        startChunkLoader(BlastFile.DATABASE_CARD);
+    }
+    
     private void loadNtButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadNtButtonActionPerformed
-        ChunkLoader loader = new ChunkLoader(this,
-                                             sample,
-                                             BlastFile.DATABASE_NT,
-                                             getSelectedFileType(),
-                                             getSelectedPf());
-        loader.execute();
+        startChunkLoader(BlastFile.DATABASE_NT);
     }//GEN-LAST:event_loadNtButtonActionPerformed
 
     private void loadBacteriaButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadBacteriaButtonActionPerformed
-        ChunkLoader loader = new ChunkLoader(this,
-                                             sample,
-                                             BlastFile.DATABASE_BACTERIA,
-                                             getSelectedFileType(),
-                                             getSelectedPf());
-        loader.execute();
+        startChunkLoader(BlastFile.DATABASE_BACTERIA);
     }//GEN-LAST:event_loadBacteriaButtonActionPerformed
 
     private void loadCardButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadCardButtonActionPerformed
-        ChunkLoader loader = new ChunkLoader(this,
-                                             sample,
-                                             BlastFile.DATABASE_CARD,
-                                             getSelectedFileType(),
-                                             getSelectedPf());
-        loader.execute();
+        startChunkLoader(BlastFile.DATABASE_CARD);
     }//GEN-LAST:event_loadCardButtonActionPerformed
 
     private void saveCardSummaryItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveCardSummaryItemActionPerformed
@@ -787,11 +827,29 @@ public class NanoOKReporter extends javax.swing.JFrame {
         options.setChunksToLoad(c);
     }//GEN-LAST:event_chunksToLoadComboActionPerformed
 
-    private void WalkButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_WalkButtonActionPerformed
+    private void walkButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_walkButtonActionPerformed
         WalkOutAnalyser wao = new WalkOutAnalyser(this, options, sample);
-        wao.analyse();
-        mainTabbedPane.setSelectedIndex(5);
-    }//GEN-LAST:event_WalkButtonActionPerformed
+        wao.execute();
+    }//GEN-LAST:event_walkButtonActionPerformed
+
+    public void walkoutFinished() {
+        mainTabbedPane.setSelectedComponent(walkoutPanelTab);
+    }
+    
+    private void refreshComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshComboActionPerformed
+        String selection = refreshCombo.getSelectedItem().toString();
+        
+        if (selection.equals("Off")) {
+            options.setRefreshTime(-1);
+        } else {
+            options.setRefreshTime(Integer.parseInt(selection));
+            refreshTimer.cancel();
+            refreshTimer = new Timer();
+            refreshTimer.schedule(new RefreshTask(options, this), 0, options.getRefreshTime() * 20 * 1000);
+        }
+        
+        System.out.println("Changed to " + options.getRefreshTime());        
+    }//GEN-LAST:event_refreshComboActionPerformed
     
     public void findType() {
         pf = getSelectedPf();
@@ -831,7 +889,7 @@ public class NanoOKReporter extends javax.swing.JFrame {
 
         setStatus("Table updated");
 
-        mainTabbedPane.setSelectedIndex(2);
+        //mainTabbedPane.setSelectedIndex(2);
     }
     
     public void updateSlidersNt() {
@@ -861,7 +919,7 @@ public class NanoOKReporter extends javax.swing.JFrame {
         summaryPanel.processTaxonomy(sample);
         setStatus("Table updated");
         
-        mainTabbedPane.setSelectedIndex(0);
+        //mainTabbedPane.setSelectedIndex(0);
     }    
 
     public void updateTableBacteria() {        
@@ -886,7 +944,7 @@ public class NanoOKReporter extends javax.swing.JFrame {
         summaryPanel.processTaxonomy(sample);
         setStatus("Table updated");
         
-        mainTabbedPane.setSelectedIndex(1);
+        //mainTabbedPane.setSelectedIndex(1);
     }    
 
     public void setCardColumnWidths() {
@@ -917,16 +975,18 @@ public class NanoOKReporter extends javax.swing.JFrame {
     
     private void setSampleDirSelected(String sampleDir) {
         sample = new NanoOKSample(options, sampleDir);
+        options.setSample(sample);
         options.storeLastLoadedSample(sampleDir);
+        checkDatabases();
         //ChunkLoader loader = new ChunkLoader(this, sample);
         //loader.execute();
         saveCardSummaryItem.setEnabled(true);
     }
     
     public void setSampleDir(String sampleDir) {
-        sample = new NanoOKSample(options, sampleDir);
-        options.storeLastLoadedSample(sampleDir);
-        saveCardSummaryItem.setEnabled(true);
+        //sample = new NanoOKSample(options, sampleDir);
+        //options.storeLastLoadedSample(sampleDir);
+        //saveCardSummaryItem.setEnabled(true);
     }
     
     /**
@@ -945,8 +1005,17 @@ public class NanoOKReporter extends javax.swing.JFrame {
     public void handleNewDirectory(String directory) {
     }
     
-    public void loadFinished() {
+    public void loadFinished(int db) {
+        if (db == BlastFile.DATABASE_NT) {
+            ntChunkLoading = false;
+        } else if (db == BlastFile.DATABASE_BACTERIA) {
+            bacteriaChunkLoading = false;
+        } else if (db == BlastFile.DATABASE_CARD) {
+            cardChunkLoading = false;
+        }        
+        
         taxonomyPanel.repaint();
+        summaryPanel.repaint();
     }
     
     public NanoOKReporterOptions getOptions() {
@@ -955,6 +1024,51 @@ public class NanoOKReporter extends javax.swing.JFrame {
     
     public WalkoutPanel getWalkoutPanel() {
         return walkoutPanel;
+    }
+    
+    public void addBlastDatabase(String path, String name) {
+        System.out.println("Found BLAST database "+name);
+    }
+    
+    public void scanDatabases() {
+        File f = new File(sample.getSampleDir());
+        File[] files = f.listFiles();
+        for (int i=0; i<files.length; i++) {
+            if (files[i].isDirectory()) {
+                if (files[i].getName().startsWith("blastn_")) {
+                    addBlastDatabase(files[i].getPath(), files[i].getName().substring(7));
+                }
+            }
+        }
+    }
+    
+    public void setSampleName(String n) {
+        options.setSampleName(n);
+    }
+    
+    public void checkDatabases() {
+        System.out.println("Checking...");
+        File f = new File(sample.getCardDir());
+        if (!f.exists()) {
+            mainTabbedPane.remove(cardPanel);
+            mainTabbedPane.remove(walkoutPanelTab);
+            walkButton.setVisible(false);
+            loadCardButton.setVisible(false);
+            loadCardButton.setEnabled(false);
+        }
+        f = new File(sample.getNtDir());
+        if (!f.exists()) {
+            mainTabbedPane.remove(ntPanel);
+            loadNtButton.setVisible(false);
+            loadNtButton.setEnabled(false);
+        }
+        f = new File(sample.getBacteriaDir());
+        if (!f.exists()) {
+            mainTabbedPane.remove(bacteriaPanel);
+            loadBacteriaButton.setVisible(false);
+            loadBacteriaButton.setEnabled(false);
+        }
+
     }
         
     /**
@@ -976,7 +1090,9 @@ public class NanoOKReporter extends javax.swing.JFrame {
                 int returnVal = jfc.showOpenDialog(rf);
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = jfc.getSelectedFile();
-                    rf.setSampleDir(selectedFile.toString());
+                    rf.setSampleName(selectedFile.getName());
+                    rf.setSampleDirSelected(selectedFile.toString());
+                    rf.scanDatabases();
                     centreWindow(rf);
                     rf.setVisible(true);
                     System.out.println("Running");
@@ -991,7 +1107,6 @@ public class NanoOKReporter extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup PassFailButtonGroup;
     private javax.swing.ButtonGroup Template2DButtonGroup;
-    private javax.swing.JButton WalkButton;
     private javax.swing.JMenu actionMenu;
     private javax.swing.JLabel bacteriaChunkLabel;
     private javax.swing.JLabel bacteriaChunkLabel1;
@@ -1009,7 +1124,9 @@ public class NanoOKReporter extends javax.swing.JFrame {
     private javax.swing.JScrollPane cardScrollPane;
     private javax.swing.JTable cardTable;
     private javax.swing.JComboBox<String> chunksToLoadCombo;
+    private javax.swing.JMenu databaseMenu;
     private javax.swing.JMenu fileMenu;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel5;
@@ -1043,6 +1160,7 @@ public class NanoOKReporter extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> passOrFailCombo;
     private javax.swing.JLabel progressLabel;
     private javax.swing.JComboBox<String> readTypeCombo;
+    private javax.swing.JComboBox<String> refreshCombo;
     private javax.swing.JMenuItem saveCardSummaryItem;
     private javax.swing.JMenuItem saveChunkTimesItem;
     private javax.swing.JPanel statusPanel;
@@ -1053,6 +1171,7 @@ public class NanoOKReporter extends javax.swing.JFrame {
     private nanookreporter.TaxonomyPanel taxonomyPanel;
     private javax.swing.JPanel taxonomyPanelTab;
     private javax.swing.JScrollPane taxonomyScrollPane;
+    private javax.swing.JButton walkButton;
     private nanookreporter.WalkoutPanel walkoutPanel;
     private javax.swing.JPanel walkoutPanelTab;
     private javax.swing.JScrollPane walkoutScrollPane;
