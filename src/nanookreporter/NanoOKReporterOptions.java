@@ -20,9 +20,20 @@ public class NanoOKReporterOptions {
     private int refreshTime = 1;
     
     public NanoOKReporterOptions() {
-        taxonomy = new Taxonomy("/Users/leggettr/Documents/Projects/BAMBI/taxdump/nodes.dmp",
-                                "/Users/leggettr/Documents/Projects/BAMBI/taxdump/names.dmp",
-                                "/Users/leggettr/Documents/Projects/BAMBI/accession2taxid/nucl_gb.accession2taxid");
+        String taxonomyPath = System.getenv("NANOOK_TAXONOMY");
+
+        if (taxonomyPath == null) {
+            System.out.println("ERROR: You must ensure that the environment variable NANOOK_TAXONOMY points to NCBI taxonomy files.");
+            System.exit(1);
+        }
+        
+        System.out.println("NANOOK_TAXONOMY set to "+taxonomyPath);
+        // /Users/leggettr/Documents/Projects/BAMBI/taxdump
+        
+        taxonomy = new Taxonomy(taxonomyPath + File.separator + "nodes.dmp",
+                                taxonomyPath + File.separator + "names.dmp");
+        
+        //                        "/Users/leggettr/Documents/Projects/BAMBI/accession2taxid/nucl_gb.accession2taxid");
         this.readPrefs();
     }
     

@@ -45,7 +45,7 @@ public class Taxonomy {
     private int otherCount = 0;
     private int totalCountCheck = 0;
     
-    public Taxonomy(String nodesFilename, String namesFilename, String mapFilename) {
+    public Taxonomy(String nodesFilename, String namesFilename) {
         try {
             System.out.println("Reading "+nodesFilename);
             BufferedReader br = new BufferedReader(new FileReader(nodesFilename));
