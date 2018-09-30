@@ -3,6 +3,7 @@ package nanookreporter;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -44,6 +45,7 @@ public class Taxonomy {
     private int assignedThreshold = 2;
     private int otherCount = 0;
     private int totalCountCheck = 0;
+    private Rectangle bounds;
     
     public Taxonomy(String nodesFilename, String namesFilename) {
         try {
@@ -559,6 +561,7 @@ public class Taxonomy {
         unclassifiedNode.setDisplayPosition(1, maxRow+1);
         plotWidth = ((maxColumn+1)*colWidth) + 200;
         plotHeight = (maxRow+2)*rowHeight;
+        System.out.println("plotWidth = "+plotWidth + " plotHeight = " + plotHeight);
     }
     
     public int getUnclassifiedCount() {
@@ -630,12 +633,19 @@ public class Taxonomy {
     }
     
     private void drawNode(Graphics g, Node n) {
-        int diameter = circleDiameter;
-       
-        diameter = setGraphicColourAndGetSizeForCount(g, n);
-        g.fillOval(colToX(n.getDisplayCol()) - (diameter/2), rowToY(n.getDisplayRow()) - (diameter/2), diameter, diameter);
-        g.setColor(Color.BLACK);
-        g.drawOval(colToX(n.getDisplayCol()) - (diameter/2), rowToY(n.getDisplayRow()) - (diameter/2), diameter, diameter);
+        int diameter = setGraphicColourAndGetSizeForCount(g, n);
+        int x = colToX(n.getDisplayCol()) - (diameter/2);
+        int y = rowToY(n.getDisplayRow()) - (diameter/2);
+
+        if ((x >= (bounds.getX() - 32)) &&
+            (y >= (bounds.getY() - 32)) &&
+            (x <= (bounds.getX() + bounds.getWidth())) &&
+            (y <= (bounds.getY() + bounds.getHeight()))) {        
+            g.fillOval(x, y, diameter, diameter);
+            g.setColor(Color.BLACK);
+            g.drawOval(x, y, diameter, diameter);
+        }
+                
         ArrayList<Node> children = n.getChildren();
         int childrenIncluded = 0;
         
@@ -658,6 +668,7 @@ public class Taxonomy {
     public void drawTree(Graphics g) {
         //System.out.println("Drawing tree...");
         Node n = getNodeFromTaxonId(1L);
+        bounds = g.getClipBounds();
         g.setFont(new Font("Arial", Font.PLAIN, 12)); 
         drawConnections(g, n);
         drawNode(g, n);

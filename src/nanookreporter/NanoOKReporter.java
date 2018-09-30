@@ -917,6 +917,8 @@ public class NanoOKReporter extends javax.swing.JFrame {
 
         setStatus("Plotting");
         summaryPanel.processTaxonomy(sample);
+        System.out.println("INCREMENT: "+taxonomyScrollPane.getVerticalScrollBar().getUnitIncrement());
+        taxonomyScrollPane.getVerticalScrollBar().setUnitIncrement(16);
         setStatus("Table updated");
         
         //mainTabbedPane.setSelectedIndex(0);
