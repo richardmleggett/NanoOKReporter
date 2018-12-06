@@ -69,9 +69,9 @@ public class NanoOKReporter extends javax.swing.JFrame {
         g.setColor(Color.WHITE);        
         g.drawString("Loading taxonomy...", (int)d.getWidth()/2, 3*(int)d.getHeight()/4);
         splash.update();
-        AROMap.readMapFile("/Users/leggettr/Documents/Databases/CARD_1.1.1_Download_17Oct16/aro.csv");
-        
         options = new NanoOKReporterOptions();
+        AROMap.readMapFile(options.getCardPath() + File.separator + "aro.csv");
+        
         taxonomyPanel.setOptions(options);
         summaryPanel.setOptions(options);
         

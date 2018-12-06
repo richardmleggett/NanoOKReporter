@@ -16,25 +16,38 @@ public class NanoOKReporterOptions {
     private String lastSample = "";
     private NanoOKSample sample;
     private String sampleName;
+    private String cardPath;
     private int chunksToLoad = 0;
     private int refreshTime = 1;
     
     public NanoOKReporterOptions() {
         String taxonomyPath = System.getenv("NANOOK_TAXONOMY");
+        cardPath = System.getenv("NANOOK_CARD");
 
+        if (cardPath == null) {
+            System.out.println("ERROR: You must ensure that the environment variable NANOOK_CARD points to CARD files.");
+            System.exit(1);
+        }
+        
+        //taxonomyPath = "/Users/leggettr/Documents/Projects/BAMBI/taxdump";
+        
         if (taxonomyPath == null) {
             System.out.println("ERROR: You must ensure that the environment variable NANOOK_TAXONOMY points to NCBI taxonomy files.");
             System.exit(1);
         }
         
         System.out.println("NANOOK_TAXONOMY set to "+taxonomyPath);
-        // /Users/leggettr/Documents/Projects/BAMBI/taxdump
+        System.out.println("NANOOK_CARD set to "+cardPath);
         
         taxonomy = new Taxonomy(taxonomyPath + File.separator + "nodes.dmp",
                                 taxonomyPath + File.separator + "names.dmp");
         
         //                        "/Users/leggettr/Documents/Projects/BAMBI/accession2taxid/nucl_gb.accession2taxid");
         this.readPrefs();
+    }
+    
+    public String getCardPath() {
+        return cardPath;
     }
     
     public Taxonomy getTaxonomy() {
