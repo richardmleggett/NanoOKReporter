@@ -176,6 +176,45 @@ public class BlastChunkSet extends AbstractTableModel {
         }
         //System.out.println("Done " + endChunk);
     }
+
+    public void countHitsCARD(int endChunk) {
+        if (endChunk > chunkCounter) {
+            System.out.println("Warning: end chunk is greater than number of chunks!");
+            endChunk = chunkCounter;
+        }
+        
+        if (chunks.size() == 0) {
+            //System.out.println("Error: No chunks");
+            return;
+        }
+        
+        if (selectedChunk < endChunk) {
+            endChunk = selectedChunk;
+        }
+        
+        idCounts.clear();
+        
+        //System.out.println("Counting hits...");
+        for (int i=0; i<=endChunk; i++) {
+            for (int j=0; j<chunks.get(i).getNumberOfAlignments(); j++) {
+                BlastAlignment ba = chunks.get(i).getTopHit(j);
+                if ((ba.getPercentIdentity() >= 70) && (ba.getLength() >= 100)) {
+                    String id = ba.getSubjectId();
+                    String title = ba.getSubjectTitle();
+                    int count = 0;
+
+                    if (idCounts.containsKey(id)) {
+                        count=idCounts.get(id);
+                    } else {
+                        titles.put(id, title);
+                    }
+
+                    idCounts.put(id, count+1);
+                }
+            }
+        }
+        //System.out.println("Done " + endChunk);
+    }
     
     public void writeSummaryFile(String filename) {
         LinkedList list = new LinkedList(idCounts.entrySet());

@@ -15,10 +15,21 @@ public class BlastHitSet {
     
     public void addAlignment(BlastAlignment b) {
         double thisBitScore = b.getBitScore();
+        boolean debug = false;
+        
+        if (b.getQueryId().equals("944fca64-4f5e-48dc-ac6d-af4655ad8c06")) {
+            debug = true;
+        }
+        
         if (thisBitScore > highestBitScore) {
             if (alignments.size() > 0) {
                 System.out.println("Unexpected new highest bitscore");
             }
+            
+            if (highestBitScore > 0) {
+                System.out.println("WARNING: Highest bitscore detected later than expected");
+            }
+            
             highestBitScore = thisBitScore;
             bitScoreThreshold = highestBitScore * 0.9;
         }
@@ -27,7 +38,14 @@ public class BlastHitSet {
             b.cacheTaxonIdPath(taxonomy);
             alignments.add(b);
         } else {
+            if (debug) {
+                System.out.println("Ignored bit score " + thisBitScore + " threshold " + bitScoreThreshold);
+            }
             ignored++;
+        }
+        
+        if (debug) {
+            System.out.println("Got "+alignments.size()+ " alignments");
         }
     }
     
@@ -35,7 +53,11 @@ public class BlastHitSet {
         return alignments.size();
     }
     
-    public BlastAlignment getAlignment(int i) {
+    public BlastAlignment getAlignment(int i) {        
+        if (i >= alignments.size()) {
+            return null;
+        }
+        
         return alignments.get(i);
     }
     

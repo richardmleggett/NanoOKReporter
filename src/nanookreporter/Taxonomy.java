@@ -242,11 +242,21 @@ public class Taxonomy {
                     }
                     Long parentId = n.getParent();
                     if ((parentId != null) && (parentId != n.getId())) {
-                        n = getNodeFromTaxonId(parentId);
+                        Node newNode = getNodeFromTaxonId(parentId);
+                        
+                        if (n == newNode) {
+                            System.out.println("Er... something went wrong!");
+                            System.out.println(n.getRankString());
+                            System.exit(1);
+                        }
+                        
+                        n = newNode;
                     } else {
                         n = null;
                     }
                 }
+            } else {
+                taxonString="Taxon ID "+Long.toString(id);
             }
         }
         
@@ -448,59 +458,100 @@ public class Taxonomy {
         //System.out.println("["+getTaxonomyStringFromName(species)+"]");
     }
     
-    public void findAncestorAndStore(BlastHitSet bhs, int treeId) {
+    public long findAncestor(BlastHitSet bhs, int treeId, int maxToParse, boolean store) {
+        long ancestor = 0;
+        boolean debug = false;        
+        
+        if (bhs.getNumberOfAlignments() == 0) {
+            System.out.println("Er... no alignments in findAncestor...");
+            System.exit(1);
+        }
+        
+        if (bhs.getAlignment(0).getQueryId().equals("46f09afe-2c8a-4f63-b2cf-29843431e317")) {
+            debug = true;
+        }
+
         if (treeId == 0) {
             //bhs.displayInfo();
-            long ancestor = 0;
-            boolean same = true;
             int level = 1;
             int maxLevel = 1000;
-            int maxToParse = 5;
             int loopTo = bhs.getNumberOfAlignments() < maxToParse ? bhs.getNumberOfAlignments():maxToParse;
 
              //System.out.println("------------ New match -----------");
+             
+             if (debug) {
+                 System.out.println("loopTo = "+loopTo);
+             }
             
             for (int i=0; i<loopTo; i++) {
-                //System.out.print(this.getTaxonomyStringFromId(bhs.getAlignment(i).getLeafNode()));
-                //System.out.println(" "+bhs.getAlignment(i).getTaxonLevel());
-                if (bhs.getAlignment(i).getTaxonLevel() < maxLevel) {
-                    maxLevel = bhs.getAlignment(i).getTaxonLevel();
+                int taxonLevel = bhs.getAlignment(i).getTaxonLevel();
+
+                if (debug) {
+                    System.out.print(this.getTaxonomyStringFromId(bhs.getAlignment(i).getLeafNode()));
+                    System.out.println(" "+taxonLevel);
                 }
-                //ArrayList tip = bhs.getAlignment(i).getTaxonIdPath();
-                //for (int j=0; j<tip.size(); j++) {
-                //    if (j > 0) {
-                //        System.out.print(",");
-                //    }
-                //    System.out.print(tip.get(j));
-                //}
-                //System.out.println("");
+                
+                if (taxonLevel > 0) {
+                    if (taxonLevel < maxLevel) {
+                        maxLevel = taxonLevel;
+                    }
+                    //ArrayList tip = bhs.getAlignment(i).getTaxonIdPath();
+                    //for (int j=0; j<tip.size(); j++) {
+                    //    if (j > 0) {
+                    //        System.out.print(",");
+                    //    }
+                    //    System.out.print(tip.get(j));
+                    //}
+                    //System.out.println("");
+                }
+            }
+            
+            if (debug) {
+                System.out.println("maxLevel = "+maxLevel);
             }
 
+            boolean same = true;
             while ((same == true) && (level <= maxLevel)) {
                 long common = -1;
                 for (int i=0; i<loopTo; i++) {
-                    if (common == -1) {
-                        common = bhs.getAlignment(i).getTaxonNode(level);
-                    } else if (bhs.getAlignment(i).getTaxonNode(level) != common) {
-                        same = false;
+                    if (bhs.getAlignment(i).getTaxonLevel() > 0) { 
+                        if (common == -1) {
+                            common = bhs.getAlignment(i).getTaxonNode(level);
+                            if (debug) {
+                                System.out.println("common = "+common);
+                            }
+                        } else if (bhs.getAlignment(i).getTaxonNode(level) != common) {
+                            same = false;
+                        }
                     }
                 }
 
                 if (same == true) {
                     ancestor = common;
-                    //System.out.println("Match on " + this.getNameFromTaxonId(common));
+                    if (debug) {
+                        System.out.println("Match on " + this.getNameFromTaxonId(common));
+                    }
                     level++;
                 }         
             }
 
-            //System.out.println("Ancestor " + this.getNameFromTaxonId(ancestor));
-            countRead(ancestor);
+            if (debug) {
+                System.out.println("Ancestor " + this.getNameFromTaxonId(ancestor));
+            }
+            
+            if (store) {
+                countRead(ancestor);
+            }
         } else {
             if (!warningId) {
                 System.out.println("Not storing taxonomy for tree ID other than 0");
                 warningId = true;
             }
         }
+        
+        //System.out.println("Ancestor is "+ancestor);
+        
+        return ancestor;
     }
     
     private void displayLevel(Node n, int l) {

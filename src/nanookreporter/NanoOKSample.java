@@ -125,7 +125,7 @@ public class NanoOKSample {
         
         for (int c=0; c<=chunkSet.getLastChunkNumber(); c++) {
             String filename = reporterDir + File.separator + sd.getName() + "_" + BlastFile.getTypeFromInt(type) + "_" + BlastFile.getPassFailFromInt(pf) + "_card_summary_" + c + ".txt";
-            chunkSet.countHits(c);
+            chunkSet.countHitsCARD(c);
             chunkSet.writeSummaryFile(filename);            
         }        
     }

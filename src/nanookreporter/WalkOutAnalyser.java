@@ -44,22 +44,31 @@ public class WalkOutAnalyser extends SwingWorker {
         String prefix = "all_Template_pass";
         String midfix_card = "blastn_card";
         String midfix_bacteria = "blastn_bacteria";
-        String summaryFilename = walkoutDir + File.separator + "walkout_results.txt";
-        PrintWriter pw = null;
+        String summaryIndependentFilename = walkoutDir + File.separator + "walkout_results_independent.txt";
+        String summaryNotIndependentFilename = walkoutDir + File.separator + "walkout_results_not_independent.txt";
+        PrintWriter pwIndependent = null;
+        PrintWriter pwNotIndependent = null;
         int chunk = 0;
         boolean moreChunks = true;
+        int chunksToLoad = options.getChunksToLoad();
         
+        if (chunksToLoad == 0) {
+            chunksToLoad = 1000;
+        }
+                
         reporter.setCursor(new Cursor(Cursor.WAIT_CURSOR));
 
         try {
-            pw = new PrintWriter(new FileWriter(summaryFilename)); 
-            pw.println("ReadId\tHostHit\tOverlap\tIndependent\tCARDhit\tChunk");
+            pwIndependent = new PrintWriter(new FileWriter(summaryIndependentFilename)); 
+            pwIndependent.println("ReadId\tChunk\tHostHit\tCARDhit\tPercentId\tLength\tOverlap\tLCATaxon");
+            pwNotIndependent = new PrintWriter(new FileWriter(summaryNotIndependentFilename)); 
+            pwNotIndependent.println("ReadId\tHostHit\tOverlap\tIndependent\tCARDhit\tChunk\tLCATaxon");
         } catch (Exception e) {
             System.out.println("Exception:");
             e.printStackTrace();
             System.exit(1);
         }
-        
+
         while (moreChunks) {
             String cardFilename = cardDir + File.separator + prefix + "_" + chunk + "_" + midfix_card + ".txt";
             String bacteriaFilename = bacteriaDir + File.separator + prefix + "_" + chunk + "_" + midfix_bacteria + ".txt";
@@ -69,12 +78,16 @@ public class WalkOutAnalyser extends SwingWorker {
                 if (bacteriaFile.exists() && bacteriaFile.isFile()) {
                     //System.out.println("Reading chunk "+chunk);
                     reporter.setStatus("Reading chunk " + chunk);
-                    WalkOutChunk woc = new WalkOutChunk(chunk);
+                    WalkOutChunk woc = new WalkOutChunk(options.getTaxonomy(), chunk);
                     woc.loadChunks(cardFile, bacteriaFile);
-                    woc.processHits(results, pw);
+                    woc.processHits(results, pwIndependent, pwNotIndependent);
 
                     chunk++;
-                    if ((chunk > 844) || (chunk > options.getChunksToLoad())) {
+                    // P8 = 202
+                    // P205G = 955
+                    // P49A = 95
+                    // P103M - 329
+                    if ((chunk > 312) || (chunk > chunksToLoad)) {
                         moreChunks=false;
                     }
                 } else {
@@ -85,11 +98,19 @@ public class WalkOutAnalyser extends SwingWorker {
                 System.out.print("Warning: can't find " + cardFilename);
                 moreChunks = false;
             }
+            
+            pwIndependent.flush();
+            pwNotIndependent.flush();
         }        
         
-        if (pw != null) {
-            pw.close();
+        if (pwIndependent != null) {
+            pwIndependent.close();
         }
+
+        if (pwNotIndependent != null) {
+            pwNotIndependent.close();
+        }
+
         
         reporter.setStatus("Writing walkout results...");
         results.writeResults(reporter, walkoutDir);

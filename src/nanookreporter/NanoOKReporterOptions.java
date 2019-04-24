@@ -24,6 +24,10 @@ public class NanoOKReporterOptions {
         String taxonomyPath = System.getenv("NANOOK_TAXONOMY");
         cardPath = System.getenv("NANOOK_CARD");
 
+        System.out.println("WARNING: DEBUGGING PATHS USED");
+        taxonomyPath = "/Users/leggettr/Documents/Projects/BAMBI/taxdump";
+        cardPath = "/Users/leggettr/Documents/Databases/CARD_1.1.1_Download_17Oct16";
+        
         if (cardPath == null) {
             System.out.println("ERROR: You must ensure that the environment variable NANOOK_CARD points to CARD files.");
             System.exit(1);
