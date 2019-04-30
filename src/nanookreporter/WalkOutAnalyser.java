@@ -50,12 +50,8 @@ public class WalkOutAnalyser extends SwingWorker {
         PrintWriter pwNotIndependent = null;
         int chunk = 0;
         boolean moreChunks = true;
-        int chunksToLoad = options.getChunksToLoad();
-        
-        if (chunksToLoad == 0) {
-            chunksToLoad = 1000;
-        }
-                
+        int chunksToLoad = options.getWalkoutMaxChunk();
+                        
         reporter.setCursor(new Cursor(Cursor.WAIT_CURSOR));
 
         try {
@@ -78,7 +74,7 @@ public class WalkOutAnalyser extends SwingWorker {
                 if (bacteriaFile.exists() && bacteriaFile.isFile()) {
                     //System.out.println("Reading chunk "+chunk);
                     reporter.setStatus("Reading chunk " + chunk);
-                    WalkOutChunk woc = new WalkOutChunk(options.getTaxonomy(), chunk);
+                    WalkOutChunk woc = new WalkOutChunk(options, options.getTaxonomy(), chunk);
                     woc.loadChunks(cardFile, bacteriaFile);
                     woc.processHits(results, pwIndependent, pwNotIndependent);
 
@@ -87,7 +83,7 @@ public class WalkOutAnalyser extends SwingWorker {
                     // P205G = 955
                     // P49A = 95
                     // P103M - 329
-                    if ((chunk > 312) || (chunk > chunksToLoad)) {
+                    if (chunk > chunksToLoad) {
                         moreChunks=false;
                     }
                 } else {

@@ -20,6 +20,7 @@ public class WalkOutRead {
     private BlastAlignment bacteriaAlignment = null;
     private BlastHitSet blastHitSet;
     private boolean gotIndependentHit = false;
+    private NanoOKReporterOptions options;
     private Taxonomy taxonomy;
     private int minOverlap = 50;
     private int longestDistance = 0;
@@ -28,7 +29,8 @@ public class WalkOutRead {
     private double bitScoreThreshold = 0;
 
         
-    public WalkOutRead(Taxonomy t) {
+    public WalkOutRead(NanoOKReporterOptions o, Taxonomy t) {
+        options = o;
         taxonomy = t;
         blastHitSet = new BlastHitSet(taxonomy);
     }
@@ -43,7 +45,7 @@ public class WalkOutRead {
         //    }
         //}
 
-        if ((ba.getPercentIdentity() >= 70) && (ba.getLength() >= 100)) {        
+        if ((ba.getPercentIdentity() >= options.getWalkoutMinID()) && (ba.getLength() >= options.getWalkoutMinLength())) {        
             int overlap = cl.getOverlap(ba.getQueryStart(), ba.getQueryEnd());
             if (overlap < (ba.getLength() / 10)) {
                 cl.add(ba.getQueryStart(), ba.getQueryEnd());

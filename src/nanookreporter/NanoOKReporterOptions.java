@@ -19,6 +19,13 @@ public class NanoOKReporterOptions {
     private String cardPath;
     private int chunksToLoad = 0;
     private int refreshTime = 1;
+    private double lcaMaxE = 0.001;
+    private double lcaMinID = 70.0;
+    private int lcaMinLength = 100;
+    private double walkoutMaxE = 0.001;
+    private double walkoutMinID = 70.0;
+    private int walkoutMinLength = 100;
+    private int walkoutMaxChunk = 202;    
     
     public NanoOKReporterOptions() {
         String taxonomyPath = System.getenv("NANOOK_TAXONOMY");
@@ -83,16 +90,39 @@ public class NanoOKReporterOptions {
     }
     
     public void readPrefs() {
+        System.out.println("Reading preferences...");
         try {
-            File f = new File(prefsFile );
+            File f = new File(prefsFile);
             
             if (f.exists()) {
-                BufferedReader br = new BufferedReader(new FileReader(f ));            
+                BufferedReader br = new BufferedReader(new FileReader(f));            
                 String line;
 
                 while ((line = br.readLine()) != null) {
-                    if (line.startsWith("LastSample:")) {
-                        lastSample = line.substring(11);
+                    String[] tokens = line.split(":");
+                    
+                    if (tokens.length == 2) {
+                        String value = tokens[1];
+
+                        if (tokens[0].compareToIgnoreCase("LastSample") == 0) {
+                            lastSample = value;
+                        } else if (tokens[0].compareToIgnoreCase("LCAMaxE") == 0) {
+                            lcaMaxE = Double.parseDouble(value);
+                        } else if (tokens[0].compareToIgnoreCase("LCAMinID") == 0) {
+                            lcaMinID = Double.parseDouble(value);
+                        } else if (tokens[0].compareToIgnoreCase("LCAMinLength") == 0) {
+                            lcaMinLength = Integer.parseInt(value);
+                        } else if (tokens[0].compareToIgnoreCase("WalkoutMaxE") == 0) {
+                            walkoutMaxE = Double.parseDouble(value);
+                        } else if (tokens[0].compareToIgnoreCase("WalkoutMinID") == 0) {
+                            walkoutMinID = Double.parseDouble(value);
+                        } else if (tokens[0].compareToIgnoreCase("WalkoutMinLength") == 0) {
+                            walkoutMinLength = Integer.parseInt(value);
+                        } else if (tokens[0].compareToIgnoreCase("WalkoutMaxChunk") == 0) {
+                            walkoutMaxChunk = Integer.parseInt(value);    
+                        }
+                    } else {
+                        System.out.println("Error: wrong number of tokens in "+line);
                     }
                 }
                 br.close();
@@ -108,17 +138,51 @@ public class NanoOKReporterOptions {
         return lastSample;
     }
     
-    public void storeLastLoadedSample(String s) {
+    public void writePrefs(String s) {
         try {
             PrintWriter pw = new PrintWriter(new FileWriter(prefsFile)); 
-            pw.write("LastSample:"+s);
+            pw.println("LastSample:"+s);
+            pw.println("LCAMaxE:"+lcaMaxE);
+            pw.println("LCAMinID:"+lcaMinID);
+            pw.println("LCAMinLength:"+lcaMinLength);
+            pw.println("WalkoutMaxE:"+walkoutMaxE);
+            pw.println("WalkoutMinID:"+walkoutMinID);
+            pw.println("WalkoutMinLength:"+walkoutMinLength);
+            pw.println("WalkoutMaxChunk:"+walkoutMaxChunk);
             pw.close();
         } catch (IOException e) {
             System.out.println("writeCardSummaries exception:");
             e.printStackTrace();
             System.exit(1);
-        }
-        
+        }    
+    }
+    
+    public Double getLCAMaxE() {
+        return lcaMaxE;
+    }
+    
+    public Double getLCAMinID() {
+        return lcaMinID;
+    }
+    
+    public int getLcaMinLength() {
+        return lcaMinLength;
+    }
+    
+    public double getWalkoutMaxE() {
+        return walkoutMaxE;
+    }
+    
+    public double getWalkoutMinID() {
+        return walkoutMinID;
+    }
+    
+    public int getWalkoutMinLength() {
+        return walkoutMinLength;
+    }
+    
+    public int getWalkoutMaxChunk() {
+        return walkoutMaxChunk;
     }
     
     public void setChunksToLoad(int l) {
@@ -129,5 +193,32 @@ public class NanoOKReporterOptions {
         return chunksToLoad;
     }
     
-
+    public void setLCAMaxE(double e) {
+        lcaMaxE = e;
+    }
+    
+    public void setLCAMinID(double id) {
+        lcaMinID = id;
+    }
+    
+    public void setLcaMinLength(int l) {
+        lcaMinLength = l;
+    }
+    
+    public void setWalkoutMaxE(double e) {
+        walkoutMaxE = e;
+    }
+    
+    public void setWalkoutMinID(double id) {
+        walkoutMinID = id;
+    }
+    
+    public void setWalkoutMinLength(int l) {
+        walkoutMinLength = l;
+        System.out.println("Walkout length set to "+l);
+    }
+    
+    public void setWalkoutMaxChunk(int m) {
+        walkoutMaxChunk = m;
+    }
 }

@@ -156,6 +156,7 @@ public class NanoOKReporter extends javax.swing.JFrame {
         mainMenuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         openMenuItem = new javax.swing.JMenuItem();
+        optionsMenuItem = new javax.swing.JMenuItem();
         databaseMenu = new javax.swing.JMenu();
         actionMenu = new javax.swing.JMenu();
         saveCardSummaryItem = new javax.swing.JMenuItem();
@@ -631,6 +632,14 @@ public class NanoOKReporter extends javax.swing.JFrame {
         openMenuItem.setEnabled(false);
         fileMenu.add(openMenuItem);
 
+        optionsMenuItem.setText("Options");
+        optionsMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                optionsMenuItemActionPerformed(evt);
+            }
+        });
+        fileMenu.add(optionsMenuItem);
+
         mainMenuBar.add(fileMenu);
 
         databaseMenu.setText("Databases");
@@ -850,6 +859,12 @@ public class NanoOKReporter extends javax.swing.JFrame {
         
         System.out.println("Changed to " + options.getRefreshTime());        
     }//GEN-LAST:event_refreshComboActionPerformed
+
+    private void optionsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_optionsMenuItemActionPerformed
+        // TODO add your handling code here:
+        OptionsDialog od = new OptionsDialog(this, options);
+        od.show();
+    }//GEN-LAST:event_optionsMenuItemActionPerformed
     
     public void findType() {
         pf = getSelectedPf();
@@ -978,7 +993,7 @@ public class NanoOKReporter extends javax.swing.JFrame {
     private void setSampleDirSelected(String sampleDir) {
         sample = new NanoOKSample(options, sampleDir);
         options.setSample(sample);
-        options.storeLastLoadedSample(sampleDir);
+        options.writePrefs(sampleDir);
         checkDatabases();
         //ChunkLoader loader = new ChunkLoader(this, sample);
         //loader.execute();
@@ -1002,6 +1017,14 @@ public class NanoOKReporter extends javax.swing.JFrame {
 
          w.setLocation((screenSize.width - frameSize.width) / 2,
                        (screenSize.height - frameSize.height) / 2);
+    }    
+
+    public static void centreWindowInParent(Window w, Window p) {
+         Rectangle parentFrame = p.getBounds();
+         Rectangle frameSize = w.getBounds();
+
+         w.setLocation((p.getX() + (p.getWidth() - w.getWidth()) / 2),
+                       (p.getY() + (p.getHeight() - w.getHeight()) / 2));
     }    
     
     public void handleNewDirectory(String directory) {
@@ -1086,6 +1109,7 @@ public class NanoOKReporter extends javax.swing.JFrame {
                 jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
                 
                 if (rf.getOptions().getLastSample() != "") {
+                    System.out.println("Setting directory to "+rf.getOptions().getLastSample());
                     jfc.setSelectedFile(new File(rf.getOptions().getLastSample()));
                 }                
                 
@@ -1159,6 +1183,7 @@ public class NanoOKReporter extends javax.swing.JFrame {
     private javax.swing.JPanel ntPanel;
     private javax.swing.JScrollPane ntScrollPane;
     private javax.swing.JMenuItem openMenuItem;
+    private javax.swing.JMenuItem optionsMenuItem;
     private javax.swing.JComboBox<String> passOrFailCombo;
     private javax.swing.JLabel progressLabel;
     private javax.swing.JComboBox<String> readTypeCombo;

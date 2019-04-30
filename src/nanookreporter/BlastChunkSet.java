@@ -178,6 +178,9 @@ public class BlastChunkSet extends AbstractTableModel {
     }
 
     public void countHitsCARD(int endChunk) {
+        double minId = options.getLCAMinID();
+        int minLength = options.getLcaMinLength();
+        
         if (endChunk > chunkCounter) {
             System.out.println("Warning: end chunk is greater than number of chunks!");
             endChunk = chunkCounter;
@@ -198,7 +201,7 @@ public class BlastChunkSet extends AbstractTableModel {
         for (int i=0; i<=endChunk; i++) {
             for (int j=0; j<chunks.get(i).getNumberOfAlignments(); j++) {
                 BlastAlignment ba = chunks.get(i).getTopHit(j);
-                if ((ba.getPercentIdentity() >= 70) && (ba.getLength() >= 100)) {
+                if ((ba.getPercentIdentity() >= minId) && (ba.getLength() >= minLength)) {
                     String id = ba.getSubjectId();
                     String title = ba.getSubjectTitle();
                     int count = 0;

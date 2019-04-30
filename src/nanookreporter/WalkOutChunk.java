@@ -9,9 +9,11 @@ import java.util.HashMap;
 public class WalkOutChunk {
     private HashMap<String, WalkOutRead> reads = new HashMap<String, WalkOutRead>();
     private Taxonomy taxonomy;
+    private NanoOKReporterOptions options;
     int chunkNumber = 0;
 
-    public WalkOutChunk(Taxonomy t, int c) {
+    public WalkOutChunk(NanoOKReporterOptions o, Taxonomy t, int c) {
+        options = o;
         taxonomy = t;
         chunkNumber = c;
     }
@@ -29,7 +31,7 @@ public class WalkOutChunk {
                     if (ba.isValidAlignment()) {
                         WalkOutRead wor = reads.get(ba.getQueryId());
                         if (wor == null) {
-                            wor = new WalkOutRead(taxonomy);
+                            wor = new WalkOutRead(options, taxonomy);
                             reads.put(ba.getQueryId(), wor);
                         }
                         wor.addCardHit(ba);
