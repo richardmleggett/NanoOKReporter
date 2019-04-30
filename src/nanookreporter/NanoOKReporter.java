@@ -889,7 +889,7 @@ public class NanoOKReporter extends javax.swing.JFrame {
         findType();
 
         BlastChunkSet amrChunkSet = sample.getCardFile().getChunkSet(type, pf);
-        sample.getCardFile().countSet(type, pf);
+        sample.getCardFile().countSet(type, pf, options.getCardMatchCriteria());
         sample.getCardFile().updateTable(cardTable, type, pf);
         cardChunkLabel.setText("Chunk "+ (amrChunkSet.getSelectedChunk() + 1) + "/" + amrChunkSet.getNumberOfChunks());
         if (cardChunkSliderMax != amrChunkSet.getLastChunkNumber()) {
@@ -923,7 +923,7 @@ public class NanoOKReporter extends javax.swing.JFrame {
         findType();
 
         BlastChunkSet taxonChunkSet = sample.getNtFile().getChunkSet(type, pf);
-        sample.getNtFile().countSet(type, pf);
+        sample.getNtFile().countSet(type, pf, options.getNtMatchCriteria());
         sample.getNtFile().updateTable(taxonTable, type, pf);
         ntChunkLabel.setText("Chunk "+ (taxonChunkSet.getSelectedChunk() + 1) + "/" + taxonChunkSet.getNumberOfChunks());
         taxonTable.setModel(taxonChunkSet);
@@ -944,7 +944,7 @@ public class NanoOKReporter extends javax.swing.JFrame {
         findType();
 
         BlastChunkSet bacteriaChunkSet = sample.getBacteriaFile().getChunkSet(type, pf);
-        sample.getBacteriaFile().countSet(type, pf);
+        sample.getBacteriaFile().countSet(type, pf, options.getNtMatchCriteria());
         sample.getBacteriaFile().updateTable(bacteriaTable, type, pf);
         bacteriaChunkLabel.setText("Chunk "+ (bacteriaChunkSet.getSelectedChunk() + 1) + "/" + bacteriaChunkSet.getNumberOfChunks());
         if (bacteriaChunkSliderMax != bacteriaChunkSet.getLastChunkNumber()) {

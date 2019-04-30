@@ -26,6 +26,9 @@ public class NanoOKReporterOptions {
     private double walkoutMinID = 70.0;
     private int walkoutMinLength = 100;
     private int walkoutMaxChunk = 202;    
+    private double cardMaxE = 0.001;
+    private double cardMinID = 70.0;
+    private int cardMinLength = 100;
     
     public NanoOKReporterOptions() {
         String taxonomyPath = System.getenv("NANOOK_TAXONOMY");
@@ -120,6 +123,12 @@ public class NanoOKReporterOptions {
                             walkoutMinLength = Integer.parseInt(value);
                         } else if (tokens[0].compareToIgnoreCase("WalkoutMaxChunk") == 0) {
                             walkoutMaxChunk = Integer.parseInt(value);    
+                        } else if (tokens[0].compareToIgnoreCase("CARDMaxE") == 0) {
+                            cardMaxE = Double.parseDouble(value);
+                        } else if (tokens[0].compareToIgnoreCase("CARDMinID") == 0) {
+                            cardMinID = Double.parseDouble(value);
+                        } else if (tokens[0].compareToIgnoreCase("CARDMinLength") == 0) {
+                            cardMinLength = Integer.parseInt(value);
                         }
                     } else {
                         System.out.println("Error: wrong number of tokens in "+line);
@@ -149,6 +158,9 @@ public class NanoOKReporterOptions {
             pw.println("WalkoutMinID:"+walkoutMinID);
             pw.println("WalkoutMinLength:"+walkoutMinLength);
             pw.println("WalkoutMaxChunk:"+walkoutMaxChunk);
+            pw.println("CARDMaxE:"+cardMaxE);
+            pw.println("CARDMinID:"+cardMinID);
+            pw.println("CARDMinLength:"+cardMinLength);
             pw.close();
         } catch (IOException e) {
             System.out.println("writeCardSummaries exception:");
@@ -165,7 +177,7 @@ public class NanoOKReporterOptions {
         return lcaMinID;
     }
     
-    public int getLcaMinLength() {
+    public int getLCAMinLength() {
         return lcaMinLength;
     }
     
@@ -184,6 +196,18 @@ public class NanoOKReporterOptions {
     public int getWalkoutMaxChunk() {
         return walkoutMaxChunk;
     }
+
+    public Double getCARDMaxE() {
+        return cardMaxE;
+    }
+    
+    public Double getCARDMinID() {
+        return cardMinID;
+    }
+    
+    public int getCARDMinLength() {
+        return cardMinLength;
+    }
     
     public void setChunksToLoad(int l) {
         chunksToLoad = l;
@@ -201,7 +225,7 @@ public class NanoOKReporterOptions {
         lcaMinID = id;
     }
     
-    public void setLcaMinLength(int l) {
+    public void setLCAMinLength(int l) {
         lcaMinLength = l;
     }
     
@@ -220,5 +244,26 @@ public class NanoOKReporterOptions {
     
     public void setWalkoutMaxChunk(int m) {
         walkoutMaxChunk = m;
+    }
+
+    public void setCARDMaxE(double e) {
+        cardMaxE = e;
+    }
+    
+    public void setCARDMinID(double id) {
+        cardMinID = id;
+    }
+    
+    public void setCARDMinLength(int l) {
+        cardMinLength = l;
+    }
+
+    
+    public BlastMatchCriteria getNtMatchCriteria() {
+        return new BlastMatchCriteria(0.001, 50.0, 0);
+    }
+    
+    public BlastMatchCriteria getCardMatchCriteria() {
+        return new BlastMatchCriteria(cardMaxE, cardMinID, cardMinLength);
     }
 }

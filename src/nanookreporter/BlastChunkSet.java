@@ -140,7 +140,7 @@ public class BlastChunkSet extends AbstractTableModel {
         return chunks.get(i);
     }
     
-    public void countHits(int endChunk) {
+    public void countHits(int endChunk, BlastMatchCriteria bmc) {
         if (endChunk > chunkCounter) {
             System.out.println("Warning: end chunk is greater than number of chunks!");
             endChunk = chunkCounter;
@@ -161,17 +161,22 @@ public class BlastChunkSet extends AbstractTableModel {
         for (int i=0; i<=endChunk; i++) {
             for (int j=0; j<chunks.get(i).getNumberOfAlignments(); j++) {
                 BlastAlignment ba = chunks.get(i).getTopHit(j);
-                String id = ba.getSubjectId();
-                String title = ba.getSubjectTitle();
-                int count = 0;
                 
-                if (idCounts.containsKey(id)) {
-                    count=idCounts.get(id);
-                } else {
-                    titles.put(id, title);
+                if ((ba.getPercentIdentity() >= bmc.getMinId()) && 
+                    (ba.getLength() >= bmc.getMinLength()))
+                {
+                    String id = ba.getSubjectId();
+                    String title = ba.getSubjectTitle();
+                    int count = 0;
+
+                    if (idCounts.containsKey(id)) {
+                        count=idCounts.get(id);
+                    } else {
+                        titles.put(id, title);
+                    }
+
+                    idCounts.put(id, count+1);
                 }
-                
-                idCounts.put(id, count+1);
             }
         }
         //System.out.println("Done " + endChunk);
@@ -179,7 +184,9 @@ public class BlastChunkSet extends AbstractTableModel {
 
     public void countHitsCARD(int endChunk) {
         double minId = options.getLCAMinID();
-        int minLength = options.getLcaMinLength();
+        int minLength = options.getLCAMinLength();
+        
+        System.out.println("Counting...");
         
         if (endChunk > chunkCounter) {
             System.out.println("Warning: end chunk is greater than number of chunks!");

@@ -79,16 +79,16 @@ public class BlastFile {
         return chunkSet.get(getIndexIntoChunkSet(type, pf));
     }
     
-    public void countSet(int type, int pf) {
+    public void countSet(int type, int pf, BlastMatchCriteria bmc) {
         int index = getIndexIntoChunkSet(type, pf);
         BlastChunkSet cs = chunkSet.get(index);        
-        cs.countHits(cs.getLastChunkNumber());
+        cs.countHits(cs.getLastChunkNumber(), bmc);
     }
     
-    public void countUptoSet(int type, int pf, int n) {
+    public void countUptoSet(int type, int pf, int n, BlastMatchCriteria bmc) {
         int index = getIndexIntoChunkSet(type, pf);
         BlastChunkSet cs = chunkSet.get(index);        
-        cs.countHits(n);
+        cs.countHits(n, bmc);
     }
     
     public void updateTable(JTable table, int type, int pf) {
