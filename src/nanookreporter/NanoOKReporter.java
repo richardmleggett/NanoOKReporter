@@ -60,6 +60,8 @@ public class NanoOKReporter extends javax.swing.JFrame {
             System.out.println("To do:");
             System.out.println("- For rescan, store last modified time and check this before recaching.");
             System.out.println("- LCA match criteria are not currently used. All matches used for LCA taxonomy display.");
+            System.out.println("- When changing criteria, update the bacteria/nt/CARD views, rather than having to restart.");
+            System.out.println("- Make it display AMR group alongside CARD hits.");            
             System.out.println("");
         }
 
