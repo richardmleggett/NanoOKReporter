@@ -98,12 +98,12 @@ public class Taxonomy {
                     
                     if (fields[2].equals("Escherichia virus Lambda")) {
                         lambdaId = id;
-                        System.out.println("Warning: need to check classification to lambda");
+                        NanoOKReporter.messageIfRichard("Warning: need to check classification to lambda");
                     }
                     
                     if (fields[2].equals("vectors")) {
                         vectorsId = id;
-                        System.out.println("Warning: need to check classification to cloning vectors");
+                        NanoOKReporter.messageIfRichard("Warning: need to check classification to cloning vectors");
                     }                    
                 } else if (fields[6].equals("synonym")) {
                     long id = Long.parseLong(fields[0]);

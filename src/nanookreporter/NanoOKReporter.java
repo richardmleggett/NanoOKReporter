@@ -55,10 +55,14 @@ public class NanoOKReporter extends javax.swing.JFrame {
         this.setPreferredSize(new Dimension(1000,800));
         System.out.println("NanoOKReporter");
         System.out.println("");
-        System.out.println("To do:");
-        System.out.println("- Allow selection of BLAST criteria");     
-        System.out.println("- For rescan, store last modified time and check this before recaching");
-        System.out.println("");
+        
+        if (System.getProperty("user.name").equals("leggettr")) {
+            System.out.println("To do:");
+            System.out.println("- For rescan, store last modified time and check this before recaching.");
+            System.out.println("- LCA match criteria are not currently used. All matches used for LCA taxonomy display.");
+            System.out.println("");
+        }
+
         initComponents();
         setNtColumnWidths();
         setCardColumnWidths();
@@ -79,6 +83,12 @@ public class NanoOKReporter extends javax.swing.JFrame {
             //sampleTextField.setText(options.getLastSample());
         //    setSampleDirSelected(options.getLastSample());
         //}
+    }
+    
+    public static void messageIfRichard(String s) {
+        if (System.getProperty("user.name").equals("leggettr")) {
+            System.out.println(s);
+        }
     }
 
     /**
@@ -923,7 +933,7 @@ public class NanoOKReporter extends javax.swing.JFrame {
         findType();
 
         BlastChunkSet taxonChunkSet = sample.getNtFile().getChunkSet(type, pf);
-        sample.getNtFile().countSet(type, pf, options.getNtMatchCriteria());
+        sample.getNtFile().countSet(type, pf, options.getHitCriteria());
         sample.getNtFile().updateTable(taxonTable, type, pf);
         ntChunkLabel.setText("Chunk "+ (taxonChunkSet.getSelectedChunk() + 1) + "/" + taxonChunkSet.getNumberOfChunks());
         taxonTable.setModel(taxonChunkSet);
@@ -944,7 +954,7 @@ public class NanoOKReporter extends javax.swing.JFrame {
         findType();
 
         BlastChunkSet bacteriaChunkSet = sample.getBacteriaFile().getChunkSet(type, pf);
-        sample.getBacteriaFile().countSet(type, pf, options.getNtMatchCriteria());
+        sample.getBacteriaFile().countSet(type, pf, options.getHitCriteria());
         sample.getBacteriaFile().updateTable(bacteriaTable, type, pf);
         bacteriaChunkLabel.setText("Chunk "+ (bacteriaChunkSet.getSelectedChunk() + 1) + "/" + bacteriaChunkSet.getNumberOfChunks());
         if (bacteriaChunkSliderMax != bacteriaChunkSet.getLastChunkNumber()) {

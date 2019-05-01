@@ -25,6 +25,7 @@ public class OptionsDialog extends javax.swing.JDialog {
         lcaMaxETextfield.setText(Double.toString(options.getLCAMaxE()));
         lcaMinIDTextfield.setText(Double.toString(options.getLCAMinID()));
         lcaMinLengthTextfield.setText(Integer.toString(options.getLCAMinLength()));
+        lcaMaxMatchesTextfield.setText(Integer.toString(options.getLCAMaxMatches()));
         walkoutMaxETextfield.setText(Double.toString(options.getWalkoutMaxE()));
         walkoutMinIDTextfield.setText(Double.toString(options.getWalkoutMinID()));
         walkoutMinLengthTextfield.setText(Integer.toString(options.getWalkoutMinLength()));
@@ -32,6 +33,10 @@ public class OptionsDialog extends javax.swing.JDialog {
         cardMaxETextfield.setText(Double.toString(options.getCARDMaxE()));
         cardMinIDTextfield.setText(Double.toString(options.getCARDMinID()));
         cardMinLengthTextfield.setText(Integer.toString(options.getCARDMinLength()));
+        hitMaxETextfield.setText(Double.toString(options.getHitMaxE()));
+        hitMinIDTextfield.setText(Double.toString(options.getHitMinID()));
+        hitMinLengthTextfield.setText(Integer.toString(options.getHitMinLength()));
+        this.getRootPane().setDefaultButton(okButton);
     }
 
     /**
@@ -50,6 +55,8 @@ public class OptionsDialog extends javax.swing.JDialog {
         lcaMinIDTextfield = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         lcaMinLengthTextfield = new javax.swing.JTextField();
+        jLabel14 = new javax.swing.JLabel();
+        lcaMaxMatchesTextfield = new javax.swing.JTextField();
         jPanel2 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         walkoutMaxETextfield = new javax.swing.JTextField();
@@ -68,6 +75,13 @@ public class OptionsDialog extends javax.swing.JDialog {
         cardMinIDTextfield = new javax.swing.JTextField();
         jLabel10 = new javax.swing.JLabel();
         cardMinLengthTextfield = new javax.swing.JTextField();
+        jPanel6 = new javax.swing.JPanel();
+        jLabel17 = new javax.swing.JLabel();
+        hitMaxETextfield = new javax.swing.JTextField();
+        jLabel18 = new javax.swing.JLabel();
+        hitMinIDTextfield = new javax.swing.JTextField();
+        jLabel19 = new javax.swing.JLabel();
+        hitMinLengthTextfield = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -100,21 +114,36 @@ public class OptionsDialog extends javax.swing.JDialog {
             }
         });
 
+        jLabel14.setText("Max matches:");
+
+        lcaMaxMatchesTextfield.setText("0");
+        lcaMaxMatchesTextfield.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                lcaMaxMatchesTextfieldActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel2)
-                    .addComponent(jLabel3))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(lcaMaxETextfield, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lcaMinIDTextfield, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lcaMinLengthTextfield, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel14)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(lcaMaxMatchesTextfield))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel3))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(lcaMaxETextfield, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lcaMinIDTextfield, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lcaMinLengthTextfield, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -132,6 +161,10 @@ public class OptionsDialog extends javax.swing.JDialog {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lcaMinLengthTextfield, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lcaMaxMatchesTextfield, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel14))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -188,8 +221,8 @@ public class OptionsDialog extends javax.swing.JDialog {
                                 .addGap(0, 0, Short.MAX_VALUE)))
                         .addGap(18, 18, 18)))
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(walkoutMaxETextfield, javax.swing.GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE)
-                    .addComponent(walkoutMinLengthTextfield, javax.swing.GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE)
+                    .addComponent(walkoutMaxETextfield, javax.swing.GroupLayout.DEFAULT_SIZE, 91, Short.MAX_VALUE)
+                    .addComponent(walkoutMinLengthTextfield, javax.swing.GroupLayout.DEFAULT_SIZE, 91, Short.MAX_VALUE)
                     .addComponent(maxChunkTextfield)
                     .addComponent(walkoutMinIDTextfield))
                 .addGap(19, 19, 19))
@@ -275,7 +308,7 @@ public class OptionsDialog extends javax.swing.JDialog {
                     .addComponent(cardMaxETextfield, javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(cardMinIDTextfield, javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(cardMinLengthTextfield, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(30, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -284,7 +317,7 @@ public class OptionsDialog extends javax.swing.JDialog {
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel8)
                     .addComponent(cardMaxETextfield, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cardMinIDTextfield, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel9))
@@ -292,6 +325,70 @@ public class OptionsDialog extends javax.swing.JDialog {
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(cardMinLengthTextfield, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jPanel6.setBorder(javax.swing.BorderFactory.createTitledBorder("Hit list matches"));
+
+        jLabel17.setText("Max e-value:");
+
+        hitMaxETextfield.setText("0");
+        hitMaxETextfield.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                hitMaxETextfieldActionPerformed(evt);
+            }
+        });
+
+        jLabel18.setText("Min identity:");
+
+        hitMinIDTextfield.setText("0");
+        hitMinIDTextfield.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                hitMinIDTextfieldActionPerformed(evt);
+            }
+        });
+
+        jLabel19.setText("Min length:");
+
+        hitMinLengthTextfield.setText("0");
+        hitMinLengthTextfield.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                hitMinLengthTextfieldActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
+        jPanel6.setLayout(jPanel6Layout);
+        jPanel6Layout.setHorizontalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addGap(18, 18, 18)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel17)
+                    .addComponent(jLabel18)
+                    .addComponent(jLabel19))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(hitMaxETextfield, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(hitMinIDTextfield, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(hitMinLengthTextfield, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel6Layout.setVerticalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel17)
+                    .addComponent(hitMaxETextfield, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(hitMinIDTextfield, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel18))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(hitMinLengthTextfield, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -308,17 +405,20 @@ public class OptionsDialog extends javax.swing.JDialog {
                         .addComponent(cancelButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(okButton))
-                    .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -362,13 +462,18 @@ public class OptionsDialog extends javax.swing.JDialog {
         double newLcaMaxE = Double.parseDouble(lcaMaxETextfield.getText());
         double newLcaMinId = Double.parseDouble(lcaMinIDTextfield.getText());
         int newLcaMinLength = Integer.parseInt(lcaMinLengthTextfield.getText());
+        int newLcaMaxMatches = Integer.parseInt(lcaMaxMatchesTextfield.getText());
         double newCardMaxE = Double.parseDouble(cardMaxETextfield.getText());
         double newCardMinId = Double.parseDouble(cardMinIDTextfield.getText());
         int newCardMinLength = Integer.parseInt(cardMinLengthTextfield.getText());
+        double newHitMaxE = Double.parseDouble(hitMaxETextfield.getText());
+        double newHitMinId = Double.parseDouble(hitMinIDTextfield.getText());
+        int newHitMinLength = Integer.parseInt(hitMinLengthTextfield.getText());
 
         if ((options.getLCAMaxE() != newLcaMaxE) ||
             (options.getLCAMinID() != newLcaMinId) ||
-            (options.getLCAMinLength() != newLcaMinLength)) {
+            (options.getLCAMinLength() != newLcaMinLength) ||
+            (options.getLCAMaxMatches() != newLcaMaxMatches)) {
             JOptionPane.showMessageDialog(this, "<html><body><p style='width: 200px;'>"+"Warning: you have changed the LCA parameters. The taxonomy and list views will only take account of this option when loading data. You may need to restart for it to take effect on all your data."+"</p></body></html>", "Warning", JOptionPane.WARNING_MESSAGE);
         }
 
@@ -378,9 +483,16 @@ public class OptionsDialog extends javax.swing.JDialog {
             JOptionPane.showMessageDialog(this, "<html><body><p style='width: 200px;'>"+"Warning: you have changed the CARD parameters. The taxonomy and list views will only take account of this option when loading data. You may need to restart for it to take effect on all your data."+"</p></body></html>", "Warning", JOptionPane.WARNING_MESSAGE);
         }
 
+        if ((options.getHitMaxE() != newHitMaxE) ||
+            (options.getHitMinID() != newHitMinId) ||
+            (options.getHitMinLength() != newHitMinLength)) {
+            JOptionPane.showMessageDialog(this, "<html><body><p style='width: 200px;'>"+"Warning: you have changed the hit parameters. The taxonomy and list views will only take account of this option when loading data. You may need to restart for it to take effect on all your data."+"</p></body></html>", "Warning", JOptionPane.WARNING_MESSAGE);
+        }
+        
         options.setLCAMaxE(newLcaMaxE);
         options.setLCAMinID(newLcaMinId);
         options.setLCAMinLength(newLcaMinLength);
+        options.setLCAMaxMatches(newLcaMaxMatches);
         options.setWalkoutMaxE(Double.parseDouble(walkoutMaxETextfield.getText()));
         options.setWalkoutMinID(Double.parseDouble(walkoutMinIDTextfield.getText()));
         options.setWalkoutMinLength(Integer.parseInt(walkoutMinLengthTextfield.getText()));
@@ -388,6 +500,9 @@ public class OptionsDialog extends javax.swing.JDialog {
         options.setCARDMaxE(newCardMaxE);
         options.setCARDMinID(newCardMinId);
         options.setCARDMinLength(newCardMinLength);
+        options.setHitMaxE(newHitMaxE);
+        options.setHitMinID(newHitMinId);
+        options.setHitMinLength(newHitMinLength);
         options.writePrefs(options.getLastSample());
         this.dispose();
     }//GEN-LAST:event_okButtonActionPerformed
@@ -403,14 +518,43 @@ public class OptionsDialog extends javax.swing.JDialog {
     private void cardMinLengthTextfieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cardMinLengthTextfieldActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_cardMinLengthTextfieldActionPerformed
+
+    private void hitMaxETextfieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hitMaxETextfieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_hitMaxETextfieldActionPerformed
+
+    private void hitMinIDTextfieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hitMinIDTextfieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_hitMinIDTextfieldActionPerformed
+
+    private void hitMinLengthTextfieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hitMinLengthTextfieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_hitMinLengthTextfieldActionPerformed
+
+    private void lcaMaxMatchesTextfieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lcaMaxMatchesTextfieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_lcaMaxMatchesTextfieldActionPerformed
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelButton;
     private javax.swing.JTextField cardMaxETextfield;
+    private javax.swing.JTextField cardMaxETextfield1;
     private javax.swing.JTextField cardMinIDTextfield;
+    private javax.swing.JTextField cardMinIDTextfield1;
     private javax.swing.JTextField cardMinLengthTextfield;
+    private javax.swing.JTextField cardMinLengthTextfield1;
+    private javax.swing.JTextField hitMaxETextfield;
+    private javax.swing.JTextField hitMinIDTextfield;
+    private javax.swing.JTextField hitMinLengthTextfield;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -422,7 +566,10 @@ public class OptionsDialog extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel6;
     private javax.swing.JTextField lcaMaxETextfield;
+    private javax.swing.JTextField lcaMaxMatchesTextfield;
     private javax.swing.JTextField lcaMinIDTextfield;
     private javax.swing.JTextField lcaMinLengthTextfield;
     private javax.swing.JTextField maxChunkTextfield;

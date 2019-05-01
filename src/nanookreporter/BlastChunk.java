@@ -13,7 +13,6 @@ public class BlastChunk {
     private long lastModified = 0;
     private NanoOKReporterOptions options;
     private int taxonomyTreeId;
-    private int lcaMaxToParse = 5;
     
     public BlastChunk(NanoOKReporterOptions o, String filename, int i) {
         String lastId = "";
@@ -38,8 +37,11 @@ public class BlastChunk {
                         }
                     } else {                       
                         if (bhs != null) {
+                            // Keep all alignments
                             allAlignments.add(bhs);
-                            options.getTaxonomy().findAncestor(bhs, taxonomyTreeId, lcaMaxToParse, true);
+
+                            // Store LCA taxonomy
+                            options.getTaxonomy().findAncestor(bhs, taxonomyTreeId, o.getLCAMaxMatches(), true);
                         }
                         lastId = ba.getQueryId();
                         lastE = ba.getEValue();
@@ -53,7 +55,7 @@ public class BlastChunk {
             // Deal with the bhs we won't have processed
             if (bhs != null) {
                 allAlignments.add(bhs);
-                options.getTaxonomy().findAncestor(bhs, taxonomyTreeId, lcaMaxToParse, true);
+                options.getTaxonomy().findAncestor(bhs, taxonomyTreeId, o.getLCAMaxMatches(), true);
             }
         
             br.close();

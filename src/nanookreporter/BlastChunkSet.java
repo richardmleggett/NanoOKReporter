@@ -183,8 +183,8 @@ public class BlastChunkSet extends AbstractTableModel {
     }
 
     public void countHitsCARD(int endChunk) {
-        double minId = options.getLCAMinID();
-        int minLength = options.getLCAMinLength();
+        double minId = options.getCARDMinID();
+        int minLength = options.getCARDMinLength();
         
         System.out.println("Counting...");
         
